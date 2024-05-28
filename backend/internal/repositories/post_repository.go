@@ -31,7 +31,7 @@ func NewPostRepository(conn *gorm.DB) *PostRepository {
 
 func (r *PostRepository) List() ([]*entities.Post, error) {
 	var posts []Post
-	if err := r.Conn.Table("posts").Select("posts.id, users.name as username, posts.user_id, posts.title, posts.body, posts.created_at, posts.updated_at").Joins("JOIN users ON posts.user_id = users.id").Scan(&posts).Error; err != nil {
+	if err := r.Conn.Table("posts").Select("posts.id, users.name as username, posts.user_id, posts.title, posts.body, posts.created_at, posts.updated_at").Joins("JOIN users ON posts.user_id = users.id").Order("posts.id DESC").Scan(&posts).Error; err != nil {
 		return nil, err
 	}
 	fmt.Printf("%+v\n", posts)
