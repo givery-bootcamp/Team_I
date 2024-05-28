@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Post } from '../shared/models/Post';
-import { fetchPosts } from '../shared/services/mockApiService'; // モックAPIサービスをインポート
+import { Post } from '../../shared/models/Post';
+import { fetchPosts } from '../../shared/services/mockApiService'; // モックAPIサービスをインポート
 
 const PostList: React.FC = () => {
     const [posts, setPosts] = useState<Post[]>([]);
