@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Post } from '../../shared/models/Post';
+import { Link } from 'react-router-dom';
 import { fetchPosts } from '../../shared/services/mockApiService'; // モックAPIサービスをインポート
 
 const PostList: React.FC = () => {
@@ -37,11 +38,13 @@ const PostList: React.FC = () => {
     return (
         <div className="p-6 bg-white shadow-lg rounded-lg">
             {posts.map(post => (
-                <div key={post.id} className="border-b mb-6 pb-4 last:border-b-0 last:mb-0 last:pb-0">
+                <Link to={`/posts/${post.id}`} key={post.id} className='block border-b mb-6 last:border-b-0 last:mb-0 last:pb-0 hover:bg-gray-100 transition-colors duration-200'>
+                <div key={post.id} className="border-b last:border-b-0 last:mb-0 last:pb-0">
                     <h2 className="text-2xl font-bold text-gray-800 mb-2">{post.title}</h2>
                     <p className="text-gray-600">ユーザー名: <span className="font-semibold">{post.username}</span></p>
                     <p className="text-gray-500">更新日: {post.updatedAt}</p>
                 </div>
+                </Link>
             ))}
         </div>
     );
