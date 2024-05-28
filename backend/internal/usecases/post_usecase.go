@@ -11,7 +11,7 @@ type ListPostUsecase struct {
 	repository entities.PostRepository
 }
 
-func NewPostUsecase(ctx *gin.Context) *ListPostUsecase {
+func NewListPostUsecase(ctx *gin.Context) *ListPostUsecase {
 	r := repositories.NewPostRepository(DB(ctx))
 	return &ListPostUsecase{
 		repository: r,

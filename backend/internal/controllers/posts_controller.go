@@ -8,7 +8,7 @@ import (
 )
 
 func GetPosts(ctx *gin.Context) {
-	u := usecases.NewPostUsecase(ctx)
+	u := usecases.NewListPostUsecase(ctx)
 	result, err := u.Execute()
 	if err != nil {
 		handleError(ctx, 500, err)
