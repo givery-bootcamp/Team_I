@@ -3,8 +3,9 @@ package repositories
 import (
 	"errors"
 	"fmt"
-	"gorm.io/gorm"
 	"myapp/internal/entities"
+
+	"gorm.io/gorm"
 )
 
 type HelloWorldRepository struct {
