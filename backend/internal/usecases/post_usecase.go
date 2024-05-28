@@ -21,3 +21,18 @@ func NewListPostUsecase(ctx *gin.Context) *ListPostUsecase {
 func (u *ListPostUsecase) Execute() ([]*entities.Post, error) {
 	return u.repository.List()
 }
+
+type GetPostByIdUsecase struct {
+	repository entities.PostRepository
+}
+
+func NewGetPostByIdUsecase(ctx *gin.Context) *GetPostByIdUsecase {
+	r := repositories.NewPostRepository(DB(ctx))
+	return &GetPostByIdUsecase{
+		repository: r,
+	}
+}
+
+func (u *GetPostByIdUsecase) Execute(id int) (*entities.Post, error) {
+	return u.repository.GetPostById(id)
+}
