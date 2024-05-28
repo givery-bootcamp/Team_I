@@ -2,16 +2,14 @@ package controllers
 
 import (
 	"errors"
-	"myapp/internal/repositories"
 	"myapp/internal/usecases"
 
 	"github.com/gin-gonic/gin"
 )
 
-func Post(ctx *gin.Context) {
-	repository := repositories.NewPostRepository(DB(ctx))
-	usecase := usecases.NewPostUsecase(repository)
-	result, err := usecase.List()
+func GetPosts(ctx *gin.Context) {
+	u := usecases.NewPostUsecase(ctx)
+	result, err := u.Execute()
 	if err != nil {
 		handleError(ctx, 500, err)
 	} else if result != nil {

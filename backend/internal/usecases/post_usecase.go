@@ -2,19 +2,22 @@ package usecases
 
 import (
 	"myapp/internal/entities"
-	"myapp/internal/interfaces"
+	"myapp/internal/repositories"
+
+	"github.com/gin-gonic/gin"
 )
 
-type PostUsecase struct {
-	repository interfaces.PostRepository
+type ListPostUsecase struct {
+	repository entities.PostRepository
 }
 
-func NewPostUsecase(r interfaces.PostRepository) *PostUsecase {
-	return &PostUsecase{
+func NewPostUsecase(ctx *gin.Context) *ListPostUsecase {
+	r := repositories.NewPostRepository(DB(ctx))
+	return &ListPostUsecase{
 		repository: r,
 	}
 }
 
-func (u *PostUsecase) List() ([]*entities.Post, error) {
+func (u *ListPostUsecase) Execute() ([]*entities.Post, error) {
 	return u.repository.List()
 }
