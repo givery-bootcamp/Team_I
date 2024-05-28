@@ -1,8 +1,8 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import PostList from '../components/PostList';
-import NewPost from '../components/NewPost';
-import JoinClub from '../components/JoinClub';
+import PostList from '../features/home/PostList';
+import NewPost from '../features/newPost/NewPost';
+import JoinClub from '../features/joinClub/JoinClub';
 
 const AppRouter: React.FC = () => {
     return (
