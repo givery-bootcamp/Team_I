@@ -1,18 +1,18 @@
-import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
-import { Provider } from 'react-redux';
-
-import './main.scss';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import './main.scss'; // Tailwind CSSをインポート
 import App from './app/App';
-import { store } from './shared/store';
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
-root.render(
-  <BrowserRouter>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </BrowserRouter>
-);
+const container = document.getElementById('root');
+
+if (container !== null) {
+    const root = createRoot(container);
+
+    root.render(
+        <React.StrictMode>
+            <App />
+        </React.StrictMode>
+    );
+} else {
+    console.error('Root container missing in index.html');
+}
