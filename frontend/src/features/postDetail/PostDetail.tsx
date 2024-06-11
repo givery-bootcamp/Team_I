@@ -41,7 +41,7 @@ const PostDetail: React.FC = () => {
     }
 
     // パラメータで指定されたIDの投稿を取得
-    const post = posts.find(post => post.id === parseInt(postId, 10));
+    const post = postId? posts.find(post => post.id === parseInt(postId, 10)):undefined;
 
     // 投稿が見つからない場合
     if (!post) {
