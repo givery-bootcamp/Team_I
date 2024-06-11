@@ -9,15 +9,13 @@ interface IFormInput{
 }
 
 
-const SingIn: React.FC = () => {
+const SignIn: React.FC = () => {
     // ユーザ名・パスワードのステートを
-    const [userName, setUsername] = useState('');
-    const [password, setPassword] = useState('');
     const [signinError, setSignInError] = useState<string | null>(null);
     const navigate = useNavigate();
 
     // const {register, handleSubmit} = useForm<IFormInput>()
-    const { register, handleSubmit, formState: { errors }, setError } = useForm<IFormInput>();
+    const { register, handleSubmit, formState: { errors }, } = useForm<IFormInput>();
     const onSubmit: SubmitHandler<IFormInput> = (data) => {
         //TODO: サブミットした時の処理を書くぞ  
         
@@ -33,6 +31,7 @@ const SingIn: React.FC = () => {
         
     }
 
+    // 提出ボタンを押さないとバリデーションがかかりません。が、面倒なので、やりません。
     return (
         <div className="p-6 bg-white shadow-lg rounded-lg">
             {/* <form onSubmit={handleSubmit}> */}
@@ -76,4 +75,4 @@ const SingIn: React.FC = () => {
     );
 };
 
-export default SingIn;
+export default SignIn;
