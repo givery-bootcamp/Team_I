@@ -8,6 +8,8 @@ interface IFormInput{
     password: string
 }
 
+// const API_URL = 'https://team-9.member0005.track-bootcamp.run/signin'
+const API_URL = 'http://localhost:3000/signin'
 
 const SignIn: React.FC = () => {
     // ユーザ名・パスワードのステートを
@@ -16,18 +18,42 @@ const SignIn: React.FC = () => {
 
     // const {register, handleSubmit} = useForm<IFormInput>()
     const { register, handleSubmit, formState: { errors }, } = useForm<IFormInput>();
-    const onSubmit: SubmitHandler<IFormInput> = (data) => {
-        //TODO: サブミットした時の処理を書くぞ  
+    const onSubmit: SubmitHandler<IFormInput> = async (data) => {
+        //TODO: サブミットした時の処理を書くぞ
+
+        // userName, passwordをバックエンドにpost
         
-        // サインイン
-        // 失敗したらサインインエラー
-        // ログインが成功したらホーム
-        const result = true;
-        if (result) {
-            navigate("/");
-        } else {
-            setSignInError("サインインが失敗したお")
-        }
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    // 'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            if (!response.ok) {
+                // 失敗したらサインインエラー
+                setSignInError(await response.json())
+            }
+            
+            // jwtを保存
+            const jwt = response.headers.get('Authorization');
+            if (jwt) {
+                localStorage.setItem('jwt', jwt);
+            }
+
+            // ユーザを保存
+            const signInUser = await response.json();
+            console.log(signInUser)
+    
+            // ログインが成功したらホーム
+            navigate("/");     
+          } catch (e) {
+            console.error(e);
+          }
+
+        
         
     }
 
