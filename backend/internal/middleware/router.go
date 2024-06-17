@@ -10,7 +10,8 @@ import (
 func SetupRoutes(app *gin.Engine) {
 	db := external.DB
 	postRepository := repositories.NewPostRepository(db)
-	h := NewHandler(postRepository)
+	userRepository := repositories.NewUserRepository(db)
+	h := NewHandler(postRepository, userRepository)
 
 	app.GET("/", func(ctx *gin.Context) {
 		ctx.String(200, "It works")
