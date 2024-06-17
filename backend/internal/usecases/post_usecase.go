@@ -3,16 +3,13 @@ package usecases
 import (
 	"myapp/internal/entities"
 	"myapp/internal/repositories"
-
-	"github.com/gin-gonic/gin"
 )
 
 type ListPostUsecase struct {
 	repository entities.PostRepository
 }
 
-func NewListPostUsecase(ctx *gin.Context) *ListPostUsecase {
-	r := repositories.NewPostRepository(DB(ctx))
+func NewListPostUsecase(r *repositories.PostRepository) *ListPostUsecase {
 	return &ListPostUsecase{
 		repository: r,
 	}
@@ -26,8 +23,7 @@ type GetPostByIdUsecase struct {
 	repository entities.PostRepository
 }
 
-func NewGetPostByIdUsecase(ctx *gin.Context) *GetPostByIdUsecase {
-	r := repositories.NewPostRepository(DB(ctx))
+func NewGetPostByIdUsecase(r *repositories.PostRepository) *GetPostByIdUsecase {
 	return &GetPostByIdUsecase{
 		repository: r,
 	}
