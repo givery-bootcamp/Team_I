@@ -61,7 +61,9 @@ const PostDetail: React.FC = () => {
             try {
                 await deletePost(post.id);
                 setMessage('投稿が削除されました');
-                navigate('/');
+                setTimeout(() => {
+                    navigate('/');
+                }, 1000);
             } catch (err) {
                 if (err instanceof Error) {
                     setError(err.message);
