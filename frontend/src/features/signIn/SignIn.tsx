@@ -1,12 +1,19 @@
-import React from 'react';
-import { useState } from 'react';
-import { useNavigate } from "react-router-dom";
-import { useForm, SubmitHandler } from "react-hook-form"
+import React, {useState} from 'react';
+import {useNavigate} from "react-router-dom";
+import {SubmitHandler, useForm} from "react-hook-form"
+import {useAuth} from "../../shared/components/AuthContext.tsx";
 
 interface IFormInput{
     userName: string
     password: string
 }
+
+// テストユーザー情報
+const TEST_USER = {
+    userName: 'testuser',
+    password: 'testpassword',
+};
+
 
 // const API_URL = 'https://team-9.member0005.track-bootcamp.run/signin'
 const API_URL = 'http://localhost:3000/signin'
@@ -15,10 +22,18 @@ const SignIn: React.FC = () => {
     // ユーザ名・パスワードのステートを
     const [signinError, setSignInError] = useState<string | null>(null);
     const navigate = useNavigate();
+    const {signIn} = useAuth();
 
     // const {register, handleSubmit} = useForm<IFormInput>()
     const { register, handleSubmit, formState: { errors }, } = useForm<IFormInput>();
+
     const onSubmit: SubmitHandler<IFormInput> = async (data) => {
+        // バックエンドを呼ばずにテストユーザーでのサインインを検証
+        if (data.userName === TEST_USER.userName && data.password === TEST_USER.password) {
+            signIn(data.userName);
+            navigate('/');
+        }
+
         //TODO: サブミットした時の処理を書くぞ
 
         // userName, passwordをバックエンドにpost
@@ -47,6 +62,8 @@ const SignIn: React.FC = () => {
             // ユーザを保存
             const signInUser = await response.json();
             console.log(signInUser)
+
+            signIn(signInUser.userName);
     
             // ログインが成功したらホーム
             navigate("/");     
