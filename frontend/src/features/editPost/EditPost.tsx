@@ -51,7 +51,9 @@ const EditPost: React.FC = () => {
         try {
             await updatePost(parseInt(postId!, 10), data);
             setMessage('投稿が更新されました。');
-            navigate(`/posts/${postId}`);
+            setTimeout(() => {
+                navigate(`/posts/${postId}`);
+            }, 1000);
         } catch (err) {
             if (err instanceof Error) {
                 setError(err.message);
