@@ -38,6 +38,15 @@ func (r *PostRepository) List() ([]*entities.Post, error) {
 	return convertPostRepositoryModelToEntity(posts), nil
 }
 
+func (r *PostRepository) GetPostById(id int) (*entities.Post, error) {
+	var post Post
+	if err := r.Conn.Table("posts").Select("posts.id, users.name as username, posts.user_id, posts.title, posts.body, posts.created_at, posts.updated_at").Joins("JOIN users ON posts.user_id = users.id").Where("posts.id = ?", id).First(&post).Error; err != nil {
+		return nil, err
+	}
+	fmt.Printf("%+v\n", post)
+	return entities.NewPost(post.Id, post.Title, post.Body, post.UserId, post.Username, post.CreatedAt, post.UpdatedAt), nil
+}
+
 func convertPostRepositoryModelToEntity(v []Post) []*entities.Post {
 	var posts []*entities.Post
 	for _, post := range v {
