@@ -35,6 +35,7 @@ const SignIn: React.FC = () => {
             if (!response.ok) {
                 // 失敗したらサインインエラー
                 setSignInError(await response.json())
+                return;
             }
             
             // jwtを保存
