@@ -2,6 +2,7 @@ package entities
 
 type PostRepository interface {
 	List() ([]*Post, error)
+	GetPostById(id int) (*Post, error)
 }
 
 type Post struct {
