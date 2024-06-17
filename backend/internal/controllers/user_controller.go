@@ -48,5 +48,4 @@ func PostSignin(ctx *gin.Context, usecase *usecases.PostSigninUsecase) {
 	} else {
 		handleError(ctx, http.StatusNotFound, errors.New("not found"))
 	}
-
 }
