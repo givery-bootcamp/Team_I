@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import PostList from '../features/home/PostList';
 import NewPost from '../features/newPost/NewPost';
 import JoinClub from '../features/joinClub/JoinClub';
+import SignIn from '../features/signIn/SignIn';
 import PostDetail from '../features/postDetail/PostDetail';
 
 const AppRouter: React.FC = () => {
@@ -11,6 +12,7 @@ const AppRouter: React.FC = () => {
             <Route path="/" element={<PostList />} />
             <Route path="/new-post" element={<NewPost />} />
             <Route path="/join-club" element={<JoinClub />} />
+            <Route path="/signin" element={<SignIn />} />
             <Route path="/posts/:postId" element={<PostDetail />} />
         </Routes>
     );
