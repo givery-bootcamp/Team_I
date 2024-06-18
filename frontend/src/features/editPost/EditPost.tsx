@@ -46,7 +46,7 @@ const EditPost: React.FC = () => {
 
     const onSubmit: SubmitHandler<IFormInput> = async (data) => {
         try {
-            // await updatePost(postId, data);
+            await updatePost(postId, data);
             showAlert('投稿が更新されました。');
             setTimeout(() => {
                 navigate(`/posts/${postId}`);
