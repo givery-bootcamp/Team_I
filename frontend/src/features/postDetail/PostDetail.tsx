@@ -4,6 +4,8 @@ import {Link, useNavigate, useParams} from 'react-router-dom';
 import {useAuth} from '../../shared/components/AuthContext';
 import {deletePost, fetchPostById} from '../../shared/services/apiService';
 import {useAlert} from '../../shared/components/AlertContext';
+import ConfirmModal from '../../shared/components/Modal';
+import { useConfirmModal } from '../../shared/hooks/useConfirmModal';
 
 const PostDetail: React.FC = () => {
     const [post, setPost] = useState<Post | null>(null);
@@ -14,6 +16,8 @@ const PostDetail: React.FC = () => {
     const {userName} = useAuth();
     const {showAlert} = useAlert();
 
+    // Modalを表示するためのカスタムフック
+    const {modalRef, confirmMessage, onConfirm, onCancel, customConfirm} = useConfirmModal();
 
     // ページが読み込まれた時に実行
     useEffect(() => {
@@ -58,7 +62,9 @@ const PostDetail: React.FC = () => {
 
     // 投稿を削除する関数
     const handleDelete = async () => {
-        if (confirm('この投稿を削除しますか？')) {
+        // モーダルを表示
+        const result = await customConfirm('投稿を削除しますか？');
+        if (result) {
             try {
                 await deletePost(post.id);
                 showAlert('投稿が削除されました');
@@ -95,6 +101,7 @@ const PostDetail: React.FC = () => {
             )}
 
             {error && <div className="text-red-500 mt-4">{error}</div>}
+            <ConfirmModal message={confirmMessage} modalRef={modalRef} onConfirm={onConfirm} onCancel={onCancel}></ConfirmModal>
         </div>
     );
 }
