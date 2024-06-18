@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Post } from '../../shared/models/Post';
-import { Link } from 'react-router-dom';
-import { fetchPosts } from '../../shared/services/mockApiService'; // モックAPIサービスをインポート
+import React, {useEffect, useState} from 'react';
+import {Post} from '../../shared/models/Post';
+import {Link} from 'react-router-dom';
+import {fetchPosts} from '../../shared/services/apiService';
 
 const PostList: React.FC = () => {
     const [posts, setPosts] = useState<Post[]>([]);
@@ -42,7 +42,7 @@ const PostList: React.FC = () => {
                 <div key={post.id} className="border-b last:border-b-0 last:mb-0 last:pb-0">
                     <h2 className="text-2xl font-bold text-gray-800 mb-2">{post.title}</h2>
                     <p className="text-gray-600">ユーザー名: <span className="font-semibold">{post.username}</span></p>
-                    <p className="text-gray-500">更新日: {post.updatedAt}</p>
+                    <p className="text-gray-500">更新日: {post.updated_at}</p>
                 </div>
                 </Link>
             ))}

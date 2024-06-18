@@ -13,6 +13,7 @@ services:
       - db
     environment:
       TZ: Asia/Tokyo
+
   frontend:
     image: node:20.12.2
     working_dir: /home/node/myapp
