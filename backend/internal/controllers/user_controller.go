@@ -3,6 +3,7 @@ package controllers
 import (
 	"errors"
 	"fmt"
+	"myapp/internal/config"
 	"myapp/internal/usecases"
 	"net/http"
 
@@ -31,8 +32,9 @@ func PostSignin(ctx *gin.Context, usecase *usecases.PostSigninUsecase) {
 		}
 		return
 	}
+	ctx.SetSameSite(http.SameSiteNoneMode)
 	// ヘッダーにトークンをセット
-	ctx.Header("Authorization", tokenString)
+	ctx.SetCookie("jwt", tokenString, 3600, "/", config.HostName, false, true)
 	fmt.Println("tokenString")
 	fmt.Println(tokenString)
 	ctx.JSON(http.StatusOK, user)
