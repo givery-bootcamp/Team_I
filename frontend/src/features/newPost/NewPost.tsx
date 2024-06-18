@@ -5,9 +5,6 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import AuthRequired from '../../shared/components/AuthRequired';
 import { createPost } from '../../shared/services/apiService';
 
-// const API_URL = 'https://team-9.member0005.track-bootcamp.run/posts';
-const API_URL = 'http://localhost:3000/posts';
-
 interface IFormInput {
     title: string;
     content: string;
@@ -29,14 +26,6 @@ const NewPost: React.FC = () => {
         try {
             // 処理開始
             isProcessing.current = true;
-            
-            // バックエンドを呼ばずにテスト投稿を検証
-            // タイトルがtestの場合は成功とする
-            if (data.title === "test") {
-                alert('投稿しました。');
-                navigate('/');
-                return;
-            }
 
             await createPost(data);
             
