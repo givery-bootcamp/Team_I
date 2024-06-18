@@ -3,6 +3,7 @@ import { useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import AuthRequired from '../../shared/components/AuthRequired';
+import { createPost } from '../../shared/services/apiService';
 
 // const API_URL = 'https://team-9.member0005.track-bootcamp.run/posts';
 const API_URL = 'http://localhost:3000/posts';
@@ -34,30 +35,22 @@ const NewPost: React.FC = () => {
             if (data.title === "test") {
                 alert('投稿しました。');
                 navigate('/');
-            }
-
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            });
-
-            if (!response.ok) {
-                // 失敗したらエラー
-                setNewPostError(await response.json());
                 return;
             }
 
+            await createPost(data);
             
             // 成功したらアラート
             alert('投稿しました。');
 
             // 成功したら投稿一覧画面に戻る
             navigate("/");
-        } catch (e) {
-            console.error(e);
+        } catch (err) {
+            if (err instanceof Error) {
+                setNewPostError(err.message);
+            } else {
+                setNewPostError('An unexpected error occurred');
+            }
         } finally {
             // 処理終了
             isProcessing.current = false;

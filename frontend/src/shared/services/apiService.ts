@@ -52,3 +52,16 @@ export const updatePost = async (id: string | undefined, data: IFormInput): Prom
         throw new Error('Failed to update post');
     }
 };
+
+export const createPost = async (data: IFormInput): Promise<void> => {
+    const response = await fetch(`${API_BASE_URL}/posts`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    });
+    if (!response.ok) {
+        throw new Error('Failed to create post');
+    }
+};
