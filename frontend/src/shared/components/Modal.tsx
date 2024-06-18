@@ -1,6 +1,13 @@
 import React from "react";
 
-const ConfirmModal = ({ message, modalRef, onConfirm, onCancel }) => {
+interface ConfirmModalProps {
+  message: string | null;
+  modalRef: React.RefObject<HTMLDialogElement>;
+  onConfirm: () => void;
+  onCancel: () => void;
+};
+
+const ConfirmModal = ({ message, modalRef, onConfirm, onCancel }: ConfirmModalProps) => {
 
   return (
     <dialog className="fixed inset-0 items-center justify-center backdrop-blur-sm" ref={modalRef}>  
