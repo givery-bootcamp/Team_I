@@ -7,3 +7,8 @@ export interface Post {
     created_at: string;
     updated_at: string;
 }
+
+export interface IFormInput {
+    title: string;
+    content: string; // 'body' から 'content' に変更
+}

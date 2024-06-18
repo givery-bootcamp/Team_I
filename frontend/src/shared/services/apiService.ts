@@ -1,5 +1,6 @@
 import {Post} from '../models/Post';
 import API_BASE_URL from '../../config';
+import {IFormInput} from '../models/Post.ts';
 
 
 export const fetchPosts = async (): Promise<Post[]> => {
@@ -39,7 +40,7 @@ export const deletePost = async (id: number): Promise<void> => {
     }
 };
 
-export const updatePost = async (id: number, data: { title: string, body: string }): Promise<void> => {
+export const updatePost = async (id: string | undefined, data: IFormInput): Promise<void> => {
     const response = await fetch(`${API_BASE_URL}/posts/${id}`, {
         method: 'PUT',
         headers: {

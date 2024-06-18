@@ -1,12 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {Post} from '../../shared/models/Post';
 import {Link, useNavigate, useParams} from 'react-router-dom';
-import {deletePost, fetchPosts} from '../../shared/services/mockApiService'; // モックAPIサービスをインポート
 import {useAuth} from '../../shared/components/AuthContext';
-import React, {useEffect, useState} from 'react';
-import {Post} from '../../shared/models/Post';
-import {Link, useParams} from 'react-router-dom';
-import {fetchPostById} from '../../shared/services/apiService';
+import {deletePost, fetchPostById} from '../../shared/services/apiService';
 
 const PostDetail: React.FC = () => {
     const [post, setPost] = useState<Post | null>(null);

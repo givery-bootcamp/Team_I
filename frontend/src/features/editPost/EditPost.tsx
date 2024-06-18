@@ -1,13 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {SubmitHandler, useForm} from 'react-hook-form';
-import {fetchPosts, updatePost} from '../../shared/services/mockApiService'; // モックAPIサービスをインポート
+import {fetchPostById, updatePost} from '../../shared/services/apiService'; // APIサービスの関数をインポート
 import {useAuth} from '../../shared/components/AuthContext';
+import {IFormInput} from '../../shared/models/Post';
 
-interface IFormInput {
-    title: string;
-    content: string;
-}
 
 const EditPost: React.FC = () => {
     const {postId} = useParams<{ postId: string }>();
@@ -21,8 +18,7 @@ const EditPost: React.FC = () => {
     useEffect(() => {
         const getPost = async () => {
             try {
-                const posts = await fetchPosts();
-                const post = posts.find(post => post.id === parseInt(postId!, 10));
+                const post = await fetchPostById(parseInt(postId!, 10)); // 単一の投稿を取得するAPI関数を使用
                 if (!post) {
                     setError('Post not found');
                     return;
@@ -32,7 +28,7 @@ const EditPost: React.FC = () => {
                     return;
                 }
                 setValue('title', post.title);
-                setValue('content', post.content);
+                setValue('content', post.body); // 'body' から 'content' に変更
             } catch (err) {
                 if (err instanceof Error) {
                     setError(err.message);
@@ -49,7 +45,7 @@ const EditPost: React.FC = () => {
 
     const onSubmit: SubmitHandler<IFormInput> = async (data) => {
         try {
-            await updatePost(parseInt(postId!, 10), data);
+            await updatePost(postId, data);
             setMessage('投稿が更新されました。');
             setTimeout(() => {
                 navigate(`/posts/${postId}`);
