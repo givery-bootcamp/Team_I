@@ -8,11 +8,11 @@ import (
 var HostName = "127.0.0.1"
 var Port = 9000
 var CorsAllowOrigin = "http://localhost:3000"
-var DBHostName = "db"
+var DBHostName = "172.19.0.3"
 var DBPort = 3306
 var DBName = "training"
-var DBUsername = "root"
-var DBPassword = ""
+var DBUsername = "user"
+var DBPassword = "password"
 
 func init() {
 	if v := os.Getenv("HOSTNAME"); v != "" {
