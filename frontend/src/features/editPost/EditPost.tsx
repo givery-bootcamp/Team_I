@@ -28,7 +28,7 @@ const EditPost: React.FC = () => {
                     return;
                 }
                 setValue('title', post.title);
-                setValue('content', post.body); // 'body' から 'content' に変更
+                setValue('content', post.body);
             } catch (err) {
                 if (err instanceof Error) {
                     setError(err.message);
