@@ -8,7 +8,11 @@ interface AuthRequiredProps {
 }
 
 const AuthRequired: React.FC<AuthRequiredProps> = ({ children }) => {
-    const { isLoggedIn } = useAuth();
+    const { isLoggedIn, isCheckingAuth } = useAuth();
+    
+    if (isCheckingAuth) {
+        return <div>ユーザ認証中...</div>;
+    }
     
     if (!isLoggedIn) {
         return <Navigate replace to="/signin"></Navigate>;
