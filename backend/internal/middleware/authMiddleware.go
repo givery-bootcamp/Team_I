@@ -10,7 +10,7 @@ import (
 const SECRET_KEY = "secret"
 
 func AuthMiddleware(ctx *gin.Context) {
-	// Authorizationヘッダーからトークンを取得
+	// Cookieヘッダーからトークンを取得
 	tokenString, err := ctx.Cookie("jwt")
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})

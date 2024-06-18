@@ -16,7 +16,7 @@ const TEST_USER = {
 
 
 // const API_URL = 'https://team-9.member0005.track-bootcamp.run/signin'
-const API_URL = 'http://localhost:3000/signin'
+const API_URL = 'http://localhost:9000/signin'
 
 const SignIn: React.FC = () => {
     // ユーザ名・パスワードのステートを
@@ -26,7 +26,7 @@ const SignIn: React.FC = () => {
 
     // const {register, handleSubmit} = useForm<IFormInput>()
     const { register, handleSubmit, formState: { errors }, } = useForm<IFormInput>();
-
+    
     const onSubmit: SubmitHandler<IFormInput> = async (data) => {
         // バックエンドを呼ばずにテストユーザーでのサインインを検証
         if (data.userName === TEST_USER.userName && data.password === TEST_USER.password) {
@@ -37,7 +37,7 @@ const SignIn: React.FC = () => {
         //TODO: サブミットした時の処理を書くぞ
 
         // userName, passwordをバックエンドにpost
-        
+        data.name = data.userName;
         try {
             const response = await fetch(API_URL, {
                 method: 'POST',
