@@ -51,8 +51,8 @@ const SignIn: React.FC = () => {
                     // 'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(sendData),
                 credentials: 'include',
+                body: JSON.stringify(sendData)
             })
             if (!response.ok) {
                 // 失敗したらサインインエラー
