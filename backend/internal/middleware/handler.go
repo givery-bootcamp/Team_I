@@ -27,3 +27,8 @@ func (h *Handler) GetPostById(ctx *gin.Context) {
 	usecase := usecases.NewGetPostByIdUsecase(h.PostRepository)
 	controllers.GetPostById(ctx, usecase)
 }
+
+func (h *Handler) DeletePost(ctx *gin.Context) {
+	usecase := usecases.NewDeletePostUsecase(h.PostRepository)
+	controllers.DeletePost(ctx, usecase)
+}

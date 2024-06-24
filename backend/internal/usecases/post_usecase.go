@@ -32,3 +32,17 @@ func NewGetPostByIdUsecase(r *repositories.PostRepository) *GetPostByIdUsecase {
 func (u *GetPostByIdUsecase) Execute(id int) (*entities.Post, error) {
 	return u.repository.GetPostById(id)
 }
+
+type DeletePostUsecase struct {
+	repository entities.PostRepository
+}
+
+func NewDeletePostUsecase(r *repositories.PostRepository) *DeletePostUsecase {
+	return &DeletePostUsecase{
+		repository: r,
+	}
+}
+
+func (u *DeletePostUsecase) Execute(id int) (error) {
+	return u.repository.DeletePost(id)
+}
