@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -39,7 +38,6 @@ func AuthMiddleware(ctx *gin.Context) {
 		userInfo[key] = value
 	}
 	ctx.Set("userInfo", userInfo)
-	fmt.Println("userInfo: ", userInfo)
 
 	ctx.Next()
 }
