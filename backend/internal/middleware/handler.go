@@ -30,9 +30,9 @@ func (h *Handler) GetPostById(ctx *gin.Context) {
 	controllers.GetPostById(ctx, usecase)
 }
 
-func (h *Handler) PostPosts(ctx *gin.Context) {
+func (h *Handler) PostPost(ctx *gin.Context) {
 	usecase := usecases.NewCreatePostUsecase(h.PostRepository)
-	controllers.PostPosts(ctx, usecase)
+	controllers.PostPost(ctx, usecase)
 }
 
 func (h *Handler) PostSignin(ctx *gin.Context) {

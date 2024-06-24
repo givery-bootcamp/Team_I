@@ -45,7 +45,7 @@ type PostRequest struct {
 	UserId int    `json:"user_id"`
 }
 
-func PostPosts(ctx *gin.Context, usecase *usecases.CreatePostUsecase) {
+func PostPost(ctx *gin.Context, usecase *usecases.CreatePostUsecase) {
 	var post PostRequest
 	if err := ctx.ShouldBindJSON(&post); err != nil {
 		handleError(ctx, http.StatusBadRequest, err)

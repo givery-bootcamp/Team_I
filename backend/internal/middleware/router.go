@@ -29,5 +29,5 @@ func SetupRoutes(app *gin.Engine) {
 
 	app.GET("/posts/:id", h.GetPostById)
 
-	app.POST("/posts", h.PostPosts)
+	app.POST("/posts", h.PostPost)
 }
