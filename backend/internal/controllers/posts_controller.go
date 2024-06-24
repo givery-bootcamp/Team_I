@@ -48,12 +48,10 @@ func DeletePost(ctx *gin.Context, usecase *usecases.DeletePostUsecase) {
 	}
 	// ctx.String(http.StatusOK, greetings[id])
 
-	result, err := usecase.Execute(id)
+	err = usecase.Execute(id)
 	if err != nil {
 		handleError(ctx, http.StatusInternalServerError, err)
-	} else if result != nil {
-		ctx.JSON(http.StatusOK, result)
 	} else {
-		handleError(ctx, http.StatusNotFound, errors.New("failed to delete post"))
+		ctx.JSON(http.StatusOK, gin.H{"message": "success"})
 	}
 }
