@@ -38,7 +38,6 @@ func PostSignin(ctx *gin.Context, usecase *usecases.PostSigninUsecase) {
 
 	ctx.SetSameSite(http.SameSiteStrictMode)
 	// ヘッダーにトークンをセット
-	log.Printf("tokenString: %v", tokenString)
 	ctx.SetCookie("jwt", tokenString, 3600, "/", "", false, true)
 	ctx.JSON(http.StatusOK, user)
 }

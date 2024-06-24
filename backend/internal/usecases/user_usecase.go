@@ -37,8 +37,10 @@ func (u *PostSigninUsecase) Execute(username, password string) (*entities.User, 
 
 	// トークンの発行（ヘッダー・ペイロード）
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username": user.Name,
-		"exp":      time.Now().Add(time.Hour * 24).Unix(),
+		"Name": user.Name,
+		"Id":   user.Id,
+		"exp":  time.Now().Add(time.Hour * 24).Unix(),
+		"iat":  time.Now().Unix(),
 	})
 
 	tokenString, err := token.SignedString([]byte(SECRET_KEY))

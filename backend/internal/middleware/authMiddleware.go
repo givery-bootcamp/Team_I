@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -17,15 +18,28 @@ func AuthMiddleware(ctx *gin.Context) {
 	}
 
 	// トークンの検証
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	payload, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(SECRET_KEY), nil
 	})
 
-	if err != nil || !token.Valid {
+	if err != nil || !payload.Valid {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
 		ctx.Abort()
 		return
 	}
+
+	claims, ok := payload.Claims.(jwt.MapClaims)
+	if !ok {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+		ctx.Abort()
+		return
+	}
+	userInfo := make(map[string]any)
+	for key, value := range claims {
+		userInfo[key] = value
+	}
+	ctx.Set("userInfo", userInfo)
+	fmt.Println("userInfo: ", userInfo)
 
 	ctx.Next()
 }

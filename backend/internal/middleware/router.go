@@ -15,13 +15,13 @@ func SetupRoutes(app *gin.Engine) {
 	h := NewHandler(postRepository, userRepository)
 
 	app.POST("/signin", h.PostSignin)
-	authGroup := app.Group("/auth")
+	authGroup := app.Group("/")
 	authGroup.Use(AuthMiddleware)
 	authGroup.GET("", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{"message": "you are authorized"})
 	})
 
-	app.GET("/", func(ctx *gin.Context) {
+	app.GET("/healthcheck", func(ctx *gin.Context) {
 		ctx.String(200, "It works")
 	})
 
