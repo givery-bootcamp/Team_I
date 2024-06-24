@@ -66,3 +66,11 @@ func (r *PostRepository) Create(userId int, title, body string) (*entities.PostF
 	}
 	return &post, nil
 }
+
+func (r *PostRepository) Update(id int, title, body string) (*entities.Post, error) {
+
+	if err := r.Conn.Table("posts").Where("id = ?", id).Update("title", title).Update("body", body).Error; err != nil {
+		return nil, err
+	}
+	return r.GetPostById(id)
+}

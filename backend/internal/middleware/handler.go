@@ -35,6 +35,11 @@ func (h *Handler) PostPost(ctx *gin.Context) {
 	controllers.PostPost(ctx, usecase)
 }
 
+func (h *Handler) PutPostById(ctx *gin.Context) {
+	usecase := usecases.NewUpdatePostUsecase(h.PostRepository)
+	controllers.PutPostById(ctx, usecase)
+}
+
 func (h *Handler) PostSignin(ctx *gin.Context) {
 	usecase := usecases.NewPostSigninUsecase(h.UserRepository)
 	controllers.PostSignin(ctx, usecase)

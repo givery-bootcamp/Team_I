@@ -68,3 +68,25 @@ func PostPost(ctx *gin.Context, usecase *usecases.CreatePostUsecase) {
 	}
 	ctx.JSON(http.StatusOK, result)
 }
+
+func PutPostById(ctx *gin.Context, usecase *usecases.UpdatePostUsecase) {
+	idString := ctx.Param("id")
+	id, err := strconv.Atoi(idString)
+	if err != nil {
+		ctx.String(http.StatusBadRequest, "Invalid ID format")
+		return
+	}
+
+	var post PostRequest
+	if err := ctx.ShouldBindJSON(&post); err != nil {
+		handleError(ctx, http.StatusBadRequest, err)
+		return
+	}
+
+	result, err := usecase.Execute(id, post.UserId, post.Title, post.Body)
+	if err != nil {
+		handleError(ctx, http.StatusBadRequest, err)
+		return
+	}
+	ctx.JSON(http.StatusOK, result)
+}
