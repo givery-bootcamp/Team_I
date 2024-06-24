@@ -3,10 +3,12 @@ import Navigation from '../shared/components/Navigation';
 import Header from '../shared/components/Header';
 import AppRouter from './AppRouter';
 import {AuthProvider} from '../shared/components/AuthContext';
+import {AlertHandler, AlertProvider} from '../shared/components/AlertContext';
 
 function App() {
     return (
         <AuthProvider>
+            <AlertProvider>
             <Router>
                 <div className="flex flex-col min-h-screen">
                     <Header/>
@@ -18,8 +20,10 @@ function App() {
                             <AppRouter/>
                         </main>
                     </div>
+                    <AlertHandler/>
                 </div>
             </Router>
+            </AlertProvider>
         </AuthProvider>
     );
 }

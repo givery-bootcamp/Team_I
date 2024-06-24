@@ -4,6 +4,7 @@ import {SubmitHandler, useForm} from 'react-hook-form';
 import {fetchPostById, updatePost} from '../../shared/services/apiService'; // APIサービスの関数をインポート
 import {useAuth} from '../../shared/components/AuthContext';
 import {IFormInput} from '../../shared/models/Post';
+import { useAlert } from '../../shared/components/AlertContext';
 
 
 const EditPost: React.FC = () => {
@@ -11,9 +12,9 @@ const EditPost: React.FC = () => {
     const {userName} = useAuth();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [message, setMessage] = useState<string | null>(null);
     const {register, handleSubmit, setValue, formState: {errors}} = useForm<IFormInput>();
     const navigate = useNavigate();
+    const {showAlert} = useAlert();
 
     useEffect(() => {
         const getPost = async () => {
@@ -46,7 +47,7 @@ const EditPost: React.FC = () => {
     const onSubmit: SubmitHandler<IFormInput> = async (data) => {
         try {
             await updatePost(postId, data);
-            setMessage('投稿が更新されました。');
+            showAlert('投稿が更新されました。');
             setTimeout(() => {
                 navigate(`/posts/${postId}`);
             }, 1000);
@@ -102,7 +103,6 @@ const EditPost: React.FC = () => {
                             className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">変更を保存する
                     </button>
                 </div>
-                {message && <div className="text-green-500 mt-4">{message}</div>}
                 {error && <div className="text-red-500 mt-4">{error}</div>}
             </form>
         </div>

@@ -3,9 +3,11 @@ import React, {createContext, ReactNode, useContext, useState} from 'react';
 
 interface AuthContextType {
     isLoggedIn: boolean;
+    isCheckingAuth: boolean;
     userName: string | null;
     signIn: (userName: string) => void;
     signOut: () => void;
+    setIsCheckingAuth: (isCheckingAuth: boolean) => void;
 }
 
 interface AuthProviderProps {
@@ -16,6 +18,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isCheckingAuth, setIsCheckingAuth] = useState(false);
     const [userName, setUserName] = useState<string | null>(null);
 
     const signIn = (userName: string) => {
@@ -29,7 +32,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
     };
 
     return (
-        <AuthContext.Provider value={{isLoggedIn, userName, signIn, signOut}}>
+        <AuthContext.Provider value={{isLoggedIn,isCheckingAuth, userName, signIn, signOut, setIsCheckingAuth}}>
             {children}
         </AuthContext.Provider>
     );
