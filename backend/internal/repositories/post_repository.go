@@ -51,7 +51,7 @@ func (r *PostRepository) GetPostById(id int) (*entities.Post, error) {
 func (r *PostRepository) DeletePost(id int) error {
 	t := time.Now()
 	//　レコードを論理削除する
-	if err := r.Conn.Table("posts").Where("id = ?", id).Update("deleted_at", t.Format(time.DateTime)).Error; err != nil {
+	if err := r.Conn.Table("posts").Where("id = ? AND deleted_at IS NULL", id).Update("deleted_at", t.Format(time.DateTime)).Error; err != nil {
 		return err
 	}
 	return nil
