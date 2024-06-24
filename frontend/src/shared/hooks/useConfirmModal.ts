@@ -14,12 +14,12 @@ export const useConfirmModal = () => {
     }
 
     const onConfirm = () => {
-        if (resolveCallback) resolveCallback(true);
+        resolveCallback?.(true);
         modalRef.current?.close();
     }
 
     const onCancel = () => {
-        if (resolveCallback) resolveCallback(false);
+        resolveCallback?.(false);
         modalRef.current?.close();
     }
     
