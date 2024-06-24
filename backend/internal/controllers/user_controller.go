@@ -41,3 +41,17 @@ func PostSignin(ctx *gin.Context, usecase *usecases.PostSigninUsecase) {
 	ctx.SetCookie("jwt", tokenString, 3600, "/", "", false, true)
 	ctx.JSON(http.StatusOK, user)
 }
+
+func PostSignout(ctx *gin.Context, usecase *usecases.PostSignoutUsecase) {
+
+	tokenString, err := usecase.Execute()
+	if err != nil {
+		log.Printf("Unexpected error in PostSignin: %v", err)
+		handleError(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	ctx.SetSameSite(http.SameSiteStrictMode)
+	// ヘッダーにトークンをセット
+	ctx.SetCookie("jwt", tokenString, -1, "/", "", false, true)
+}

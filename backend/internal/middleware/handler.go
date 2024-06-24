@@ -34,3 +34,8 @@ func (h *Handler) PostSignin(ctx *gin.Context) {
 	usecase := usecases.NewPostSigninUsecase(h.UserRepository)
 	controllers.PostSignin(ctx, usecase)
 }
+
+func (h *Handler) PostSignout(ctx *gin.Context) {
+	usecase := usecases.NewPostSignoutUsecase(h.UserRepository)
+	controllers.PostSignout(ctx, usecase)
+}
