@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"errors"
-	"fmt"
+	"log"
 	"myapp/internal/usecases"
 	"net/http"
 
@@ -18,24 +18,27 @@ func PostSignin(ctx *gin.Context, usecase *usecases.PostSigninUsecase) {
 
 	var json JsonRequestUser
 	if err := ctx.ShouldBindJSON(&json); err != nil {
+		log.Printf("Error binding JSON: %v", err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	username, password := json.Name, json.Password
 	user, tokenString, err := usecase.Execute(username, password)
 	if err != nil {
 		if err == usecases.ErrUserNotFound || err == usecases.ErrPasswordIncorrect {
+			log.Printf("Error in user authentication: %v", err)
 			handleError(ctx, http.StatusBadRequest, errors.New("incorrect username or password"))
 		} else {
+			log.Printf("Unexpected error in PostSignin: %v", err)
 			handleError(ctx, http.StatusInternalServerError, err)
 		}
 		return
 	}
+
 	ctx.SetSameSite(http.SameSiteNoneMode)
 	// ヘッダーにトークンをセット
+	log.Printf("tokenString: %v", tokenString)
 	ctx.SetCookie("jwt", tokenString, 3600, "/", "", false, true)
-	fmt.Println("tokenString")
-	fmt.Println(tokenString)
 	ctx.JSON(http.StatusOK, user)
-
 }
