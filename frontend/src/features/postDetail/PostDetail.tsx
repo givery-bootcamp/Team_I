@@ -3,15 +3,16 @@ import {Post} from '../../shared/models/Post';
 import {Link, useNavigate, useParams} from 'react-router-dom';
 import {useAuth} from '../../shared/components/AuthContext';
 import {deletePost, fetchPostById} from '../../shared/services/apiService';
+import {useAlert} from '../../shared/components/AlertContext';
 
 const PostDetail: React.FC = () => {
     const [post, setPost] = useState<Post | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [message, setMessage] = useState<string | null>(null);
     const {postId} = useParams<{ postId: string }>();
     const navigate = useNavigate();
     const {userName} = useAuth();
+    const {showAlert} = useAlert();
 
 
     // ページが読み込まれた時に実行
@@ -60,7 +61,7 @@ const PostDetail: React.FC = () => {
         if (confirm('この投稿を削除しますか？')) {
             try {
                 await deletePost(post.id);
-                setMessage('投稿が削除されました');
+                showAlert('投稿が削除されました');
                 setTimeout(() => {
                     navigate('/');
                 }, 1000);
@@ -93,7 +94,6 @@ const PostDetail: React.FC = () => {
                 </div>
             )}
 
-            {message && <div className="text-green-500 mt-4">{message}</div>}
             {error && <div className="text-red-500 mt-4">{error}</div>}
         </div>
     );

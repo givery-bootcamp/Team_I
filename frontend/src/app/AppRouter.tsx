@@ -11,7 +11,7 @@ const AppRouter: React.FC = () => {
     return (
         <Routes>
             <Route path="/" element={<PostList />} />
-            <Route path="/new-post" element={<NewPost />} />
+            <Route path="/posts/new" element={<NewPost />} />
             <Route path="/join-club" element={<JoinClub />} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/posts/:postId" element={<PostDetail />} />

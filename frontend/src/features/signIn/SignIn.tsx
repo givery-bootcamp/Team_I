@@ -22,7 +22,7 @@ const SignIn: React.FC = () => {
     // ユーザ名・パスワードのステートを
     const [signinError, setSignInError] = useState<string | null>(null);
     const navigate = useNavigate();
-    const {signIn} = useAuth();
+    const {signIn, setIsCheckingAuth} = useAuth();
 
     // const {register, handleSubmit} = useForm<IFormInput>()
     const { register, handleSubmit, formState: { errors }, } = useForm<IFormInput>();
@@ -43,6 +43,8 @@ const SignIn: React.FC = () => {
             password: data.password,
         }
         try {
+            // ユーザ認証開始
+            setIsCheckingAuth(true);
             const response = await fetch(API_URL, {
                 method: 'POST',
                 headers: {
@@ -69,15 +71,15 @@ const SignIn: React.FC = () => {
             console.log(signInUser)
 
             signIn(signInUser.userName);
-    
+
             // ログインが成功したらホーム
             navigate("/");     
           } catch (e) {
             console.error(e);
+          } finally {
+            // ユーザ認証終了
+            setIsCheckingAuth(false);
           }
-
-        
-        
     }
 
     // 提出ボタンを押さないとバリデーションがかかりません。が、面倒なので、やりません。
