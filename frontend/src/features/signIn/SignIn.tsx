@@ -37,7 +37,11 @@ const SignIn: React.FC = () => {
         //TODO: サブミットした時の処理を書くぞ
 
         // userName, passwordをバックエンドにpost
-        data.name = data.userName;
+        // data.name = data.userName;
+        const sendData = {
+            name: data.userName,
+            password: data.password,
+        }
         try {
             const response = await fetch(API_URL, {
                 method: 'POST',
@@ -45,7 +49,8 @@ const SignIn: React.FC = () => {
                     // 'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(data)
+                body: JSON.stringify(sendData),
+                credentials: 'include',
             })
             if (!response.ok) {
                 // 失敗したらサインインエラー
