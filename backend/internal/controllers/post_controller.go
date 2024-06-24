@@ -38,3 +38,23 @@ func GetPostById(ctx *gin.Context, usecase *usecases.GetPostByIdUsecase) {
 		handleError(ctx, http.StatusNotFound, errors.New("not found"))
 	}
 }
+
+type PostRequest struct {
+	Title  string `json:"title"`
+	Body   string `json:"body"`
+	UserId int    `json:"user_id"`
+}
+
+func PostPosts(ctx *gin.Context, usecase *usecases.CreatePostUsecase) {
+	var post PostRequest
+	if err := ctx.ShouldBindJSON(&post); err != nil {
+		handleError(ctx, http.StatusBadRequest, err)
+		return
+	}
+	result, err := usecase.Execute(post.UserId, post.Title, post.Body)
+	if err != nil {
+		handleError(ctx, http.StatusBadRequest, err)
+		return
+	}
+	ctx.JSON(http.StatusOK, result)
+}
