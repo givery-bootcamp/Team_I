@@ -4,6 +4,8 @@ type PostRepository interface {
 	List() ([]*Post, error)
 	GetPostById(id int) (*Post, error)
 	DeletePost(id int) error
+	Create(userId int, title, body string) (*PostForInsert, error)
+	Update(id int, title, body string) (*Post, error)
 }
 
 type Post struct {
@@ -14,6 +16,13 @@ type Post struct {
 	Username  string `json:"username"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
+}
+
+type PostForInsert struct {
+	Id     int    `json:"id"`
+	UserId int    `json:"user_id"`
+	Title  string `json:"title"`
+	Body   string `json:"body"`
 }
 
 func NewPost(id int, title, body string, userId int, username, createdAt, updatedAt string) *Post {

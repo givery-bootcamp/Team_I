@@ -34,7 +34,6 @@ func (r *UserRepository) GetUserById(id int) (*entities.User, error) {
 	if err := r.Conn.Table("users").Select("id, name, password, created_at, updated_at").Where("id = ?", id).First(&user).Error; err != nil {
 		return nil, err
 	}
-	fmt.Printf("%+v\n", user)
 	return entities.NewUser(user.Id, user.Name, user.Password, user.CreatedAt, user.UpdatedAt), nil
 }
 

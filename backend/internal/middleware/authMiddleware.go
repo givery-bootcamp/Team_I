@@ -35,9 +35,12 @@ func AuthMiddleware(ctx *gin.Context) {
 	}
 	userInfo := make(map[string]any)
 	for key, value := range claims {
-		userInfo[key] = value
+		if key == "Id" {
+			userInfo[key] = int(value.(float64))
+		} else {
+			userInfo[key] = value
+		}
 	}
 	ctx.Set("userInfo", userInfo)
-
 	ctx.Next()
 }

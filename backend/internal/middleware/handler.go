@@ -34,7 +34,27 @@ func (h *Handler) DeletePost(ctx *gin.Context) {
 	usecase := usecases.NewDeletePostUsecase(h.PostRepository)
 	controllers.DeletePost(ctx, usecase)
 }
+func (h *Handler) PostPost(ctx *gin.Context) {
+	usecase := usecases.NewCreatePostUsecase(h.PostRepository)
+	controllers.PostPost(ctx, usecase)
+}
+
+func (h *Handler) PutPostById(ctx *gin.Context) {
+	usecase := usecases.NewUpdatePostUsecase(h.PostRepository)
+	controllers.PutPostById(ctx, usecase)
+}
+
 func (h *Handler) PostSignin(ctx *gin.Context) {
 	usecase := usecases.NewPostSigninUsecase(h.UserRepository)
 	controllers.PostSignin(ctx, usecase)
+}
+
+func (h *Handler) PostSignout(ctx *gin.Context) {
+	usecase := usecases.NewPostSignoutUsecase(h.UserRepository)
+	controllers.PostSignout(ctx, usecase)
+}
+
+func (h *Handler) GetUser(ctx *gin.Context) {
+	usecase := usecases.NewGetUserUsecase(h.UserRepository)
+	controllers.GetUser(ctx, usecase)
 }
