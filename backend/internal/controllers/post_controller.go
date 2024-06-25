@@ -83,7 +83,17 @@ func PutPostById(ctx *gin.Context, usecase *usecases.UpdatePostUsecase) {
 		return
 	}
 
-	result, err := usecase.Execute(id, post.UserId, post.Title, post.Body)
+	userInfoAny, exists := ctx.Get("userInfo")
+	if !exists {
+		fmt.Println("User info not found")
+		handleError(ctx, http.StatusBadRequest, ErrUserInfoNotFound)
+		return
+	}
+	userInfo := userInfoAny.(map[string]any)
+	userId := userInfo["Id"].(int)
+
+	result, err := usecase.Execute(id, userId, post.Title, post.Body)
+	// result, err := usecase.Execute(id, post.UserId, post.Title, post.Body)
 	if err != nil {
 		handleError(ctx, http.StatusBadRequest, err)
 		return
