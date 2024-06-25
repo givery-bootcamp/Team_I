@@ -54,3 +54,15 @@ func convertPostRepositoryModelToEntity(v []Post) []*entities.Post {
 	}
 	return posts
 }
+
+func (r *PostRepository) Create(userId int, title, body string) (*entities.PostForInsert, error) {
+	post := entities.PostForInsert{
+		Title:  title,
+		Body:   body,
+		UserId: userId,
+	}
+	if err := r.Conn.Table("posts").Create(&post).Error; err != nil {
+		return nil, err
+	}
+	return &post, nil
+}

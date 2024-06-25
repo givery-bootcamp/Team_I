@@ -30,6 +30,11 @@ func (h *Handler) GetPostById(ctx *gin.Context) {
 	controllers.GetPostById(ctx, usecase)
 }
 
+func (h *Handler) PostPost(ctx *gin.Context) {
+	usecase := usecases.NewCreatePostUsecase(h.PostRepository)
+	controllers.PostPost(ctx, usecase)
+}
+
 func (h *Handler) PostSignin(ctx *gin.Context) {
 	usecase := usecases.NewPostSigninUsecase(h.UserRepository)
 	controllers.PostSignin(ctx, usecase)
@@ -38,4 +43,9 @@ func (h *Handler) PostSignin(ctx *gin.Context) {
 func (h *Handler) PostSignout(ctx *gin.Context) {
 	usecase := usecases.NewPostSignoutUsecase(h.UserRepository)
 	controllers.PostSignout(ctx, usecase)
+}
+
+func (h *Handler) GetUser(ctx *gin.Context) {
+	usecase := usecases.NewGetUserUsecase(h.UserRepository)
+	controllers.GetUser(ctx, usecase)
 }
