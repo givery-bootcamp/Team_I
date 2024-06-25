@@ -70,7 +70,7 @@ const SignIn: React.FC = () => {
             const signInUser = await response.json();
             console.log(signInUser)
 
-            signIn(signInUser.userName);
+            signIn(signInUser.name);
 
             // ログインが成功したらホーム
             navigate("/");     
