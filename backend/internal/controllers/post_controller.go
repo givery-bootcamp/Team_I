@@ -41,8 +41,8 @@ func GetPostById(ctx *gin.Context, usecase *usecases.GetPostByIdUsecase) {
 }
 
 type PostRequest struct {
-	Title string `json:"title"`
-	Body  string `json:"body"`
+	Title   string `json:"title"`
+	Content string `json:"content"`
 }
 
 var ErrUserInfoNotFound = fmt.Errorf("user info not found")
@@ -61,7 +61,7 @@ func PostPost(ctx *gin.Context, usecase *usecases.CreatePostUsecase) {
 	}
 	userInfo := userInfoAny.(map[string]any)
 	userId := userInfo["Id"].(int)
-	result, err := usecase.Execute(userId, post.Title, post.Body)
+	result, err := usecase.Execute(userId, post.Title, post.Content)
 	if err != nil {
 		handleError(ctx, http.StatusBadRequest, err)
 		return
