@@ -11,12 +11,14 @@ import (
 type Handler struct {
 	PostRepository *repositories.PostRepository
 	UserRepository *repositories.UserRepository
+	CommentRepository *repositories.CommentRepository
 }
 
-func NewHandler(postRepository *repositories.PostRepository, userRepository *repositories.UserRepository) *Handler {
+func NewHandler(postRepository *repositories.PostRepository, userRepository *repositories.UserRepository, commentRepository *repositories.CommentRepository) *Handler {
 	return &Handler{
 		PostRepository: postRepository,
 		UserRepository: userRepository,
+		CommentRepository: commentRepository,
 	}
 }
 
@@ -26,7 +28,7 @@ func (h *Handler) GetPosts(ctx *gin.Context) {
 }
 
 func (h *Handler) GetPostById(ctx *gin.Context) {
-	usecase := usecases.NewGetPostByIdUsecase(h.PostRepository)
+	usecase := usecases.NewGetPostByIdUsecase(h.PostRepository, h.CommentRepository)
 	controllers.GetPostById(ctx, usecase)
 }
 

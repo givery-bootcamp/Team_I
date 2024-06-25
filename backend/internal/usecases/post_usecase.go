@@ -20,15 +20,17 @@ func (u *ListPostUsecase) Execute() ([]*entities.Post, error) {
 }
 
 type GetPostByIdUsecase struct {
-	repository entities.PostRepository
+	postRepository entities.PostRepository
+	commentRepository entities.CommentRepository
 }
 
-func NewGetPostByIdUsecase(r *repositories.PostRepository) *GetPostByIdUsecase {
+func NewGetPostByIdUsecase(postRepository *repositories.PostRepository, commentRepository *repositories.CommentRepository) *GetPostByIdUsecase {
 	return &GetPostByIdUsecase{
-		repository: r,
+		postRepository: postRepository,
+		commentRepository: commentRepository,
 	}
 }
 
 func (u *GetPostByIdUsecase) Execute(id int) (*entities.Post, error) {
-	return u.repository.GetPostById(id)
+	return u.postRepository.GetPostById(id)
 }

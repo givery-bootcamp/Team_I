@@ -12,7 +12,8 @@ func SetupRoutes(app *gin.Engine) {
 	db := external.DB
 	postRepository := repositories.NewPostRepository(db)
 	userRepository := repositories.NewUserRepository(db)
-	h := NewHandler(postRepository, userRepository)
+	commentRepository := repositories.NewCommentRepository(db)
+	h := NewHandler(postRepository, userRepository, commentRepository)
 
 	app.POST("/signin", h.PostSignin)
 	authGroup := app.Group("/")
