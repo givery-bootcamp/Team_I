@@ -29,5 +29,6 @@ func SetupRoutes(app *gin.Engine) {
 
 	app.GET("/posts/:id", h.GetPostById)
 
-	app.DELETE("/posts/:id", h.DeletePost)
+	// app.DELETE("/posts/:id", h.DeletePost)
+	authGroup.DELETE("/posts/:id", h.DeletePost)
 }

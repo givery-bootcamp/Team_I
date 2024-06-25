@@ -41,14 +41,32 @@ func GetPostById(ctx *gin.Context, usecase *usecases.GetPostByIdUsecase) {
 
 func DeletePost(ctx *gin.Context, usecase *usecases.DeletePostUsecase) {
 	idString := ctx.Param("id")
-	id, err := strconv.Atoi(idString)
+	post_id, err := strconv.Atoi(idString)
 	if err != nil {
 		ctx.String(http.StatusBadRequest, "Invalid ID format")
 		return
 	}
 	// ctx.String(http.StatusOK, greetings[id])
 
-	err = usecase.Execute(id)
+	// ユーザidを取得します
+	userInfo, is_exists := ctx.Get("userInfo")
+	if !is_exists {
+		handleError(ctx, http.StatusInternalServerError, errors.New("userInfo does not exist"))
+		return
+	}
+	user_id_str, is_exists := userInfo.(map[string]interface{})["user_id"]
+	if !is_exists {
+		handleError(ctx, http.StatusInternalServerError, errors.New("user_id does not exist"))
+		return
+	}
+	user_id, err := strconv.Atoi(user_id_str.(string))
+	if err != nil {
+		handleError(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	// ポストを削除します
+	err = usecase.Execute(user_id, post_id)
 	if err != nil {
 		handleError(ctx, http.StatusInternalServerError, err)
 	} else {
