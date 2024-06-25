@@ -35,7 +35,8 @@ export const deletePost = async (id: number): Promise<void> => {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
-        }
+        },
+        credentials: 'include',
     });
     if (!response.ok) {
         throw new Error('Failed to delete post');
@@ -48,7 +49,8 @@ export const updatePost = async (id: string | undefined, data: IFormInput): Prom
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
+        credentials: 'include',
     });
     if (!response.ok) {
         throw new Error('Failed to update post');
@@ -61,7 +63,8 @@ export const createPost = async (data: IFormInput): Promise<void> => {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
+        credentials: 'include',
     });
     if (!response.ok) {
         throw new Error('Failed to create post');
