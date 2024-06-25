@@ -54,16 +54,21 @@ func DeletePost(ctx *gin.Context, usecase *usecases.DeletePostUsecase) {
 		handleError(ctx, http.StatusInternalServerError, errors.New("userInfo does not exist"))
 		return
 	}
-	user_id_str, is_exists := userInfo.(map[string]interface{})["user_id"]
+
+	// userInfoをマップとしてキャスト
+	userInfoMap, ok := userInfo.(map[string]interface{})
+	if !ok {
+		handleError(ctx, http.StatusInternalServerError, errors.New("userInfo is not a map"))
+		return
+	}
+	// userInfoからuser_idを取得します
+	user_id_float, is_exists := userInfoMap["Id"]
 	if !is_exists {
 		handleError(ctx, http.StatusInternalServerError, errors.New("user_id does not exist"))
 		return
 	}
-	user_id, err := strconv.Atoi(user_id_str.(string))
-	if err != nil {
-		handleError(ctx, http.StatusInternalServerError, err)
-		return
-	}
+	// intにキャスト
+	user_id := int(user_id_float.(float64))
 
 	// ポストを削除します
 	err = usecase.Execute(user_id, post_id)

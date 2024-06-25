@@ -35,7 +35,8 @@ export const deletePost = async (id: number): Promise<void> => {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
-        }
+        },
+        credentials: 'include',
     });
     if (!response.ok) {
         throw new Error('Failed to delete post');
