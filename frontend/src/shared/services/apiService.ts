@@ -7,7 +7,8 @@ export const fetchPosts = async (): Promise<Post[]> => {
     const response = await fetch(`${API_BASE_URL}/posts`, {
         headers: {
             'Content-Type': 'application/json',
-        }
+        },
+        credentials: 'include',
     });
     console.log(response);
     if (!response.ok) {
@@ -20,7 +21,8 @@ export const fetchPostById = async (id: number): Promise<Post> => {
     const response = await fetch(`${API_BASE_URL}/posts/${id}`, {
         headers: {
             'Content-Type': 'application/json',
-        }
+        },
+        credentials: 'include',
     });
     if (!response.ok) {
         throw new Error('Failed to fetch post');

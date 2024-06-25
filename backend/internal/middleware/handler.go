@@ -10,11 +10,13 @@ import (
 
 type Handler struct {
 	PostRepository *repositories.PostRepository
+	UserRepository *repositories.UserRepository
 }
 
-func NewHandler(postRepository *repositories.PostRepository) *Handler {
+func NewHandler(postRepository *repositories.PostRepository, userRepository *repositories.UserRepository) *Handler {
 	return &Handler{
 		PostRepository: postRepository,
+		UserRepository: userRepository,
 	}
 }
 
@@ -31,4 +33,8 @@ func (h *Handler) GetPostById(ctx *gin.Context) {
 func (h *Handler) DeletePost(ctx *gin.Context) {
 	usecase := usecases.NewDeletePostUsecase(h.PostRepository)
 	controllers.DeletePost(ctx, usecase)
+}
+func (h *Handler) PostSignin(ctx *gin.Context) {
+	usecase := usecases.NewPostSigninUsecase(h.UserRepository)
+	controllers.PostSignin(ctx, usecase)
 }
