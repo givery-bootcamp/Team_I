@@ -92,8 +92,7 @@ func PutPostById(ctx *gin.Context, usecase *usecases.UpdatePostUsecase) {
 	userInfo := userInfoAny.(map[string]any)
 	userId := userInfo["Id"].(int)
 
-	result, err := usecase.Execute(id, userId, post.Title, post.Body)
-	// result, err := usecase.Execute(id, post.UserId, post.Title, post.Body)
+	result, err := usecase.Execute(id, userId, post.Title, post.Content)
 	if err != nil {
 		handleError(ctx, http.StatusBadRequest, err)
 		return
