@@ -41,3 +41,30 @@ func PostSignin(ctx *gin.Context, usecase *usecases.PostSigninUsecase) {
 	ctx.SetCookie("jwt", tokenString, 3600, "/", "", false, true)
 	ctx.JSON(http.StatusOK, user)
 }
+
+func GetUser(ctx *gin.Context, usecase *usecases.GetUserUsecase) {
+
+	anyUserInfo, ok := ctx.Get("userInfo")
+	if !ok {
+		handleError(ctx, http.StatusInternalServerError, errors.New("user info not found"))
+		return
+	}
+	userInfo, ok := anyUserInfo.(map[string]interface{})
+	if !ok {
+		handleError(ctx, http.StatusInternalServerError, errors.New("user info cannot be converted"))
+		return
+	}
+	userId, ok := userInfo["Id"].(int)
+	if !ok {
+		handleError(ctx, http.StatusInternalServerError, errors.New("user id not found"))
+		return
+	}
+	user, err := usecase.Execute(userId)
+	if err != nil {
+		log.Printf("Unexpected error in GetUser: %v", err)
+		handleError(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, user)
+}

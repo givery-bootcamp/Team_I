@@ -20,6 +20,7 @@ func SetupRoutes(app *gin.Engine) {
 	authGroup.GET("", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{"message": "you are authorized"})
 	})
+	authGroup.GET("/user", h.GetUser)
 
 	app.GET("/healthcheck", func(ctx *gin.Context) {
 		ctx.String(200, "It works")
