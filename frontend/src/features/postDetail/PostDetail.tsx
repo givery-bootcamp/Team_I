@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {Post} from '../../shared/models/Post';
 import {Link, useNavigate, useParams} from 'react-router-dom';
-import {useAuth} from '../../shared/components/AuthContext';
+import {useAuth} from '../../shared/context/useAuth';
 import {deletePost, fetchPostById} from '../../shared/services/apiService';
 import {useAlert} from '../../shared/components/AlertContext';
 import ConfirmModal from '../../shared/components/Modal';
 import { useConfirmModal } from '../../shared/hooks/useConfirmModal';
+
 
 const PostDetail: React.FC = () => {
     const [post, setPost] = useState<Post | null>(null);
@@ -13,7 +14,8 @@ const PostDetail: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const {postId} = useParams<{ postId: string }>();
     const navigate = useNavigate();
-    const {userName} = useAuth();
+    const { user } = useAuth();
+    const userName = user?.name;
     const {showAlert} = useAlert();
 
     // Modalを表示するためのカスタムフック

@@ -1,60 +1,47 @@
 import React, {useState} from 'react';
 import {useNavigate} from "react-router-dom";
 import {SubmitHandler, useForm} from "react-hook-form"
-import {useAuth} from "../../shared/components/AuthContext.tsx";
+import { useAuth } from "../../shared/context/useAuth.ts";
+import { IAuthContext } from "../../shared/context/AuthContext.types.ts";
 import {signIn as apiSignIn} from "../../shared/services/apiService.ts";
+import {User} from "../../shared/models/User.ts";
 
-interface IFormInput{
-    userName: string
-    password: string
+
+interface IFormInput {
+    userName: string,
+    password: string,
 }
-
-// テストユーザー情報
-const TEST_USER = {
-    userName: 'testuser',
-    password: 'testpassword',
-};
 
 
 const SignIn: React.FC = () => {
-    // ユーザ名・パスワードのステートを
-    const [signinError] = useState<string | null>(null);
+    const [signinError, setSigninError] = useState<string | undefined>(undefined);
     const navigate = useNavigate();
-    const {signIn, setIsCheckingAuth} = useAuth();
+    const { signIn, setIsCheckingAuth } = useAuth() as IAuthContext;
 
-    // const {register, handleSubmit} = useForm<IFormInput>()
     const { register, handleSubmit, formState: { errors }, } = useForm<IFormInput>();
     
     const onSubmit: SubmitHandler<IFormInput> = async (data) => {
-        // バックエンドを呼ばずにテストユーザーでのサインインを検証
-        if (data.userName === TEST_USER.userName && data.password === TEST_USER.password) {
-            signIn(data.userName);
-            navigate('/');
-        }
-
-        //TODO: サブミットした時の処理を書くぞ
-
-        // userName, passwordをバックエンドにpost
-        // data.name = data.userName;
         const sendData = {
             name: data.userName,
             password: data.password,
         }
         try {
-            // ユーザ認証開始
             setIsCheckingAuth(true);
             const response = await apiSignIn(sendData);
-            // ユーザを保存
-            console.log(response)
+            const user: User = {
+                id: response.id,
+                name: response.name,
+            }
+            console.log(user)
 
-            signIn(response.name);
+            signIn(user);
 
             // ログインが成功したらホーム
             navigate("/");     
           } catch (e) {
             console.error(e);
+            setSigninError('ユーザー名またはパスワードが間違っています。');
           } finally {
-            // ユーザ認証終了
             setIsCheckingAuth(false);
           }
     }

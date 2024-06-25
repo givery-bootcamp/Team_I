@@ -1,7 +1,7 @@
 // src/components/AuthRequired.tsx
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from './AuthContext';
+import { useAuth } from '../context/useAuth';
 
 interface AuthRequiredProps {
     children: React.ReactNode;

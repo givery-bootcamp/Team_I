@@ -2,14 +2,14 @@ import React, {useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {SubmitHandler, useForm} from 'react-hook-form';
 import {fetchPostById, updatePost} from '../../shared/services/apiService'; // APIサービスの関数をインポート
-import {useAuth} from '../../shared/components/AuthContext';
+import {useAuth} from '../../shared/context/useAuth';
 import {IFormInput} from '../../shared/models/Post';
 import { useAlert } from '../../shared/components/AlertContext';
 
 
 const EditPost: React.FC = () => {
     const {postId} = useParams<{ postId: string }>();
-    const {userName} = useAuth();
+    const {user} = useAuth();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const {register, handleSubmit, setValue, formState: {errors}} = useForm<IFormInput>();
@@ -24,7 +24,7 @@ const EditPost: React.FC = () => {
                     setError('Post not found');
                     return;
                 }
-                if (post.username !== userName) {
+                if (post.username !== user?.name) {
                     navigate('/');
                     return;
                 }
@@ -42,7 +42,7 @@ const EditPost: React.FC = () => {
         };
 
         getPost();
-    }, [postId, userName, navigate, setValue]);
+    }, [postId, user, navigate, setValue]);
 
     const onSubmit: SubmitHandler<IFormInput> = async (data) => {
         try {
