@@ -19,7 +19,13 @@ const EditPost: React.FC = () => {
     useEffect(() => {
         const getPost = async () => {
             try {
-                const post = await fetchPostById(parseInt(postId!, 10)); // 単一の投稿を取得するAPI関数を使用
+                const postIdNumber = postId && parseInt(postId, 10);
+                if (!postIdNumber) {
+                    setError('Post not found');
+                    return;
+                }
+
+                const post = await fetchPostById(postIdNumber); // 単一の投稿を取得するAPI関数を使用
                 if (!post) {
                     setError('Post not found');
                     return;
@@ -46,7 +52,7 @@ const EditPost: React.FC = () => {
 
     const onSubmit: SubmitHandler<IFormInput> = async (data) => {
         try {
-            await updatePost(postId, data);
+            await updatePost(data, postId);
             showAlert('投稿が更新されました。');
             setTimeout(() => {
                 navigate(`/posts/${postId}`);
