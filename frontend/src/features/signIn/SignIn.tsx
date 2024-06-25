@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {useNavigate} from "react-router-dom";
 import {SubmitHandler, useForm} from "react-hook-form"
 import {useAuth} from "../../shared/components/AuthContext.tsx";
+import {signIn as apiSignIn} from "../../shared/services/apiService.ts";
 
 interface IFormInput{
     userName: string
@@ -15,12 +16,9 @@ const TEST_USER = {
 };
 
 
-// const API_URL = 'https://team-9.member0005.track-bootcamp.run/signin'
-const API_URL = 'http://localhost:9000/signin'
-
 const SignIn: React.FC = () => {
     // ユーザ名・パスワードのステートを
-    const [signinError, setSignInError] = useState<string | null>(null);
+    const [signinError] = useState<string | null>(null);
     const navigate = useNavigate();
     const {signIn, setIsCheckingAuth} = useAuth();
 
@@ -45,32 +43,11 @@ const SignIn: React.FC = () => {
         try {
             // ユーザ認証開始
             setIsCheckingAuth(true);
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: {
-                    // 'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify(sendData)
-            })
-            if (!response.ok) {
-                // 失敗したらサインインエラー
-                setSignInError(await response.json())
-                return;
-            }
-            
-            // jwtを保存
-            const jwt = response.headers.get('Authorization');
-            if (jwt) {
-                localStorage.setItem('jwt', jwt);
-            }
-
+            const response = await apiSignIn(sendData);
             // ユーザを保存
-            const signInUser = await response.json();
-            console.log(signInUser)
+            console.log(response)
 
-            signIn(signInUser.userName);
+            signIn(response.name);
 
             // ログインが成功したらホーム
             navigate("/");     

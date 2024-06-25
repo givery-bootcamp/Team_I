@@ -1,25 +1,13 @@
 import React from 'react';
 import {useAuth} from './AuthContext.tsx';
-import API_BASE_URL from "../../config.ts";
+import {signOut as apiSignOut} from "../services/apiService.ts";
+
 
 const SignInStatus: React.FC = () => {
     const {isLoggedIn, userName, signOut} = useAuth();
 
     const handleSignOut = async () => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/signout`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-            });
-            if (!response.ok) {
-                throw new Error('Sign out failed');
-            }
-        } catch (error) {
-            console.error(error);
-        }
+        await apiSignOut();
 
         signOut();
     }

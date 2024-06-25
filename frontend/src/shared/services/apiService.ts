@@ -3,67 +3,60 @@ import API_BASE_URL from '../../config';
 import {IFormInput} from '../models/Post.ts';
 
 
-export const fetchPosts = async (): Promise<Post[]> => {
-    const response = await fetch(`${API_BASE_URL}/posts`, {
+type APIRequestOptions<T = undefined> = T extends undefined ? undefined : {data: T};
+
+
+const apiRequest = async <T = undefined>(url: string, method = 'GET', options?:  APIRequestOptions<T>): Promise<any> => {
+    const requestOptions: RequestInit = {
+        method,
         headers: {
             'Content-Type': 'application/json',
         },
         credentials: 'include',
-    });
-    console.log(response);
-    if (!response.ok) {
-        throw new Error('Failed to fetch posts');
-    }
-    return response.json();
-};
+    };
 
-export const fetchPostById = async (id: number): Promise<Post> => {
-    const response = await fetch(`${API_BASE_URL}/posts/${id}`, {
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-    });
-    if (!response.ok) {
-        throw new Error('Failed to fetch post');
-    }
-    return response.json();
-}
+    const requestData = options && 'data' in options ? options.data : undefined;
 
-export const deletePost = async (id: number): Promise<void> => {
-    const response = await fetch(`${API_BASE_URL}/posts/${id}`, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
+    if (requestData) {
+        requestOptions.body = JSON.stringify(requestData);
+    }
+
+    console.log('url', url);
+    console.log('requestOptions', requestOptions);
+    const response = await fetch(url, requestOptions);
+    if (!response.ok) {
+        console.error(`Failed to ${method}`, response);
+
+        // Extract error message
+        let errorText = 'Unknown error occurred';
+        try {
+            const errorData = await response.json();
+            errorText = errorData.error || JSON.stringify(errorData);
+        } catch(e) {
+            // Failed to parse response
+            errorText = await response.text();
         }
-    });
-    if (!response.ok) {
-        throw new Error('Failed to delete post');
+        throw new Error(errorText);
+    }
+
+    if (response.ok && response.headers.get('content-type')?.includes('application/json')) {
+        return response.json();
+    } else {
+        throw new Error(`HTTP error! status: ${response.status}`);
     }
 };
 
-export const updatePost = async (id: string | undefined, data: IFormInput): Promise<void> => {
-    const response = await fetch(`${API_BASE_URL}/posts/${id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data)
-    });
-    if (!response.ok) {
-        throw new Error('Failed to update post');
-    }
-};
+export const fetchPosts = (): Promise<Post[]> => apiRequest(`${API_BASE_URL}/posts`);
 
-export const createPost = async (data: IFormInput): Promise<void> => {
-    const response = await fetch(`${API_BASE_URL}/posts`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data)
-    });
-    if (!response.ok) {
-        throw new Error('Failed to create post');
-    }
-};
+export const fetchPostById = (id: number): Promise<Post> => apiRequest(`${API_BASE_URL}/posts/${id}`);
+
+export const deletePost = (id: number): Promise<void> => apiRequest(`${API_BASE_URL}/posts/${id}`, 'DELETE');
+
+export const updatePost = (data: IFormInput, id: string | undefined): Promise<any> => apiRequest(`${API_BASE_URL}/posts/${id}`, 'PUT', {data});
+
+export const createPost = (data: IFormInput): Promise<any> => apiRequest(`${API_BASE_URL}/posts`, 'POST', {data});
+
+export const signIn = (data: { name: string; password: string }): Promise<any> =>
+    apiRequest(`${API_BASE_URL}/signin`, 'POST', { data: { name: data.name, password: data.password } });
+
+export const signOut = (): Promise<any> => apiRequest(`${API_BASE_URL}/signout`, 'POST');
