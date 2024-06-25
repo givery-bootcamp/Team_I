@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"errors"
+	"fmt"
 	"myapp/internal/usecases"
 	"net/http"
 	"strconv"
@@ -40,10 +41,11 @@ func GetPostById(ctx *gin.Context, usecase *usecases.GetPostByIdUsecase) {
 }
 
 type PostRequest struct {
-	Title  string `json:"title"`
-	Body   string `json:"body"`
-	UserId int    `json:"user_id"`
+	Title string `json:"title"`
+	Body  string `json:"body"`
 }
+
+var ErrUserInfoNotFound = fmt.Errorf("user info not found")
 
 func PostPost(ctx *gin.Context, usecase *usecases.CreatePostUsecase) {
 	var post PostRequest
@@ -51,7 +53,15 @@ func PostPost(ctx *gin.Context, usecase *usecases.CreatePostUsecase) {
 		handleError(ctx, http.StatusBadRequest, err)
 		return
 	}
-	result, err := usecase.Execute(post.UserId, post.Title, post.Body)
+	userInfoAny, exists := ctx.Get("userInfo")
+	if !exists {
+		fmt.Println("User info not found")
+		handleError(ctx, http.StatusBadRequest, ErrUserInfoNotFound)
+		return
+	}
+	userInfo := userInfoAny.(map[string]any)
+	userId := userInfo["Id"].(int)
+	result, err := usecase.Execute(userId, post.Title, post.Body)
 	if err != nil {
 		handleError(ctx, http.StatusBadRequest, err)
 		return
