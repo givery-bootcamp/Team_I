@@ -3,7 +3,6 @@ package middleware
 import (
 	"myapp/internal/external"
 	"myapp/internal/repositories"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,11 +14,9 @@ func SetupRoutes(app *gin.Engine) {
 	h := NewHandler(postRepository, userRepository)
 
 	app.POST("/signin", h.PostSignin)
+
 	authGroup := app.Group("/")
 	authGroup.Use(AuthMiddleware)
-	authGroup.GET("", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{"message": "you are authorized"})
-	})
 
 	app.POST("/signout", h.PostSignout)
 
@@ -33,5 +30,9 @@ func SetupRoutes(app *gin.Engine) {
 
 	app.GET("/posts/:id", h.GetPostById)
 
+	// app.DELETE("/posts/:id", h.DeletePost)
+	authGroup.DELETE("/posts/:id", h.DeletePost)
 	authGroup.POST("/posts", h.PostPost)
+
+	authGroup.PUT("/posts/:id", h.PutPostById)
 }
