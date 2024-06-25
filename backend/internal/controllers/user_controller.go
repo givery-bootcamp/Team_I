@@ -54,4 +54,5 @@ func PostSignout(ctx *gin.Context, usecase *usecases.PostSignoutUsecase) {
 	ctx.SetSameSite(http.SameSiteStrictMode)
 	// ヘッダーにトークンをセット
 	ctx.SetCookie("jwt", tokenString, -1, "/", "", false, true)
+	ctx.JSON(http.StatusOK, "signed out successfully")
 }
