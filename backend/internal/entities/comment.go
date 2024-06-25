@@ -1,7 +1,7 @@
 package entities
 
 type CommentRepository interface {
-	GetListByPostId() ([]*Comment, error)
+	GetListByPostId(post_id int) ([]*Comment, error)
 	// CreateComment(comment *Comment) error
 	// UpdateComment(comment *Comment) error
 	// DeleteComment(id int) error
