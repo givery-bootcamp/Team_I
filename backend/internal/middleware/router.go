@@ -39,4 +39,6 @@ func SetupRoutes(app *gin.Engine) {
 	authGroup.POST("/posts", h.PostPost)
 
 	authGroup.PUT("/posts/:id", h.PutPostById)
+
+	authGroup.POST("/comments", h.PostComment)
 }

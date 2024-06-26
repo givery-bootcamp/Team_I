@@ -9,15 +9,15 @@ import (
 )
 
 type Handler struct {
-	PostRepository *repositories.PostRepository
-	UserRepository *repositories.UserRepository
+	PostRepository    *repositories.PostRepository
+	UserRepository    *repositories.UserRepository
 	CommentRepository *repositories.CommentRepository
 }
 
 func NewHandler(postRepository *repositories.PostRepository, userRepository *repositories.UserRepository, commentRepository *repositories.CommentRepository) *Handler {
 	return &Handler{
-		PostRepository: postRepository,
-		UserRepository: userRepository,
+		PostRepository:    postRepository,
+		UserRepository:    userRepository,
 		CommentRepository: commentRepository,
 	}
 }
@@ -59,4 +59,9 @@ func (h *Handler) PostSignout(ctx *gin.Context) {
 func (h *Handler) GetUser(ctx *gin.Context) {
 	usecase := usecases.NewGetUserUsecase(h.UserRepository)
 	controllers.GetUser(ctx, usecase)
+}
+
+func (h *Handler) PostComment(ctx *gin.Context) {
+	usecase := usecases.NewCreateCommentUsecase(h.CommentRepository)
+	controllers.PostComment(ctx, usecase)
 }
