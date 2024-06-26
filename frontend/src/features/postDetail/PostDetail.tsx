@@ -14,8 +14,10 @@ const PostDetail: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const {postId} = useParams<{ postId: string }>();
     const navigate = useNavigate();
+
     const { user } = useAuth();
-    const userName = user?.name;
+    const userId = user?.id;
+
     const {showAlert} = useAlert();
 
     // Modalを表示するためのカスタムフック
@@ -25,6 +27,7 @@ const PostDetail: React.FC = () => {
     useEffect(() => {
         const getPost = async () => {
             try {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 const data = await fetchPostById(parseInt(postId!, 10));
                 console.log(data);
                 setPost(data);
@@ -95,7 +98,7 @@ const PostDetail: React.FC = () => {
             <p className="text-gray-500 mt-4">{post.body}</p>
             <Link to="/" className="text-blue-500 mt-4 block">ホームに戻る</Link>
 
-            {userName === post.username && (
+            {userId === post.user_id && (
                 <div className="mt-4">
                     <Link to={`/posts/${post.id}/edit`} className="text-blue-500 mr-4">編集</Link>
                     <button onClick={handleDelete} className="text-red-500">削除</button>
