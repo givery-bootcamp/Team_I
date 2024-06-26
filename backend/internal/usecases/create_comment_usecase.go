@@ -14,6 +14,11 @@ func NewCreateCommentUsecase(r entities.CommentRepository) *CreateCommentUsecase
 	}
 }
 
-func (u *CreateCommentUsecase) Execute(postId, userId int, body string) (*entities.Comment, error) {
-	return u.repository.Create(postId, userId, body)
+func (u *CreateCommentUsecase) Execute(userId, postId int, body string) (*entities.Comment, error) {
+	comment := entities.Comment{
+		UserId: userId,
+		PostId: postId,
+		Body:   body,
+	}
+	return u.repository.Create(&comment)
 }

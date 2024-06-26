@@ -1,15 +1,14 @@
 package middleware
 
 import (
-	"myapp/internal/external"
 	"myapp/internal/repositories"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-func SetupRoutes(app *gin.Engine) {
-	db := external.DB
+func SetupRoutes(app *gin.Engine, db *gorm.DB) {
 	postRepository := repositories.NewPostRepository(db)
 	userRepository := repositories.NewUserRepository(db)
 	commentRepository := repositories.NewCommentRepository(db)
@@ -41,4 +40,5 @@ func SetupRoutes(app *gin.Engine) {
 	authGroup.PUT("/posts/:id", h.PutPostById)
 
 	authGroup.POST("/comments", h.PostComment)
+	authGroup.PUT("/comments/:id", h.PutComment)
 }

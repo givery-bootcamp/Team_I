@@ -65,3 +65,8 @@ func (h *Handler) PostComment(ctx *gin.Context) {
 	usecase := usecases.NewCreateCommentUsecase(h.CommentRepository)
 	controllers.PostComment(ctx, usecase)
 }
+
+func (h *Handler) PutComment(ctx *gin.Context) {
+	usecase := usecases.NewUpdateCommentUsecase(h.CommentRepository)
+	controllers.PutComment(ctx, usecase)
+}

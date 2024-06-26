@@ -24,16 +24,19 @@ func (r *CommentRepository) GetListByPostId(post_id int) ([]*entities.Comment, e
 	return comments, nil
 }
 
-func (r *CommentRepository) Create(user_id, post_id int, body string) (*entities.Comment, error) {
-	comment := entities.Comment{
-		UserId: user_id,
-		PostId: post_id,
-		Body:   body,
-	}
-	result := r.Conn.Table("comments").Select("UserId", "PostId", "Body").Create(&comment)
+func (r *CommentRepository) Create(comment *entities.Comment) (*entities.Comment, error) {
+	result := r.Conn.Table("comments").Select("UserId", "PostId", "Body").Create(comment)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	return &comment, nil
+	return comment, nil
+}
+
+func (r *CommentRepository) Update(comment *entities.Comment) (*entities.Comment, error) {
+	err := r.Conn.Model(comment).Select("Body").Updates(comment).Error
+	if err != nil {
+		return nil, err
+	}
+	return comment, nil
 }

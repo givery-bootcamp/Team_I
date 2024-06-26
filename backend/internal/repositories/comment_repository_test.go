@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"database/sql/driver"
+	"myapp/internal/entities"
 	"testing"
 	"time"
 
@@ -47,7 +48,12 @@ func TestCreate(t *testing.T) {
 	mock.ExpectCommit()
 
 	// 関数を実行
-	result, err := repo.Create(userID, postID, body)
+	comment := entities.Comment{
+		UserId: userID,
+		PostId: postID,
+		Body:   body,
+	}
+	result, err := repo.Create(&comment)
 
 	// アサーション
 	assert.NoError(t, err)
@@ -62,4 +68,51 @@ func TestCreate(t *testing.T) {
 	// すべてのモックの期待が満たされていることを確認
 	err = mock.ExpectationsWereMet()
 	assert.NoError(t, err)
+}
+
+func TestUpdate(t *testing.T) {
+	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+	assert.NoError(t, err)
+	defer db.Close()
+
+	// GORMのモックデータベース接続を開く
+	dialector := mysql.New(mysql.Config{
+		Conn:                      db,
+		SkipInitializeWithVersion: true,
+	})
+	gormDB, err := gorm.Open(dialector, &gorm.Config{})
+	assert.NoError(t, err)
+
+	// CommentRepositoryのインスタンスを作成
+	repo := NewCommentRepository(gormDB)
+
+	// テストデータ
+	id := 1
+	body := "This is a comment updated"
+
+	// モックの期待される動作を設定
+	mock.ExpectBegin()
+	mock.ExpectExec("UPDATE `comments` SET `body`=?,`updated_at`=? WHERE `id` = ?").WithArgs(body, AnyTime{}, id).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+
+	// 関数を実行
+	comment := entities.Comment{
+		Id:   id,
+		Body: body,
+	}
+	result, err := repo.Update(&comment)
+
+	// アサーション
+
+	assert.NoError(t, err)
+	assert.NotNil(t, result)
+	assert.Equal(t, id, result.Id)
+	assert.Equal(t, body, result.Body)
+	assert.NotNil(t, result.UpdatedAt)
+
+	// すべてのモックの期待が満たされていることを確認
+	err = mock.ExpectationsWereMet()
+	assert.NoError(t, err)
+
 }
