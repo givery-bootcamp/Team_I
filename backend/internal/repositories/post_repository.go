@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"fmt"
+	"time"
 	"myapp/internal/entities"
 
 	"gorm.io/gorm"
@@ -31,7 +32,7 @@ func NewPostRepository(conn *gorm.DB) *PostRepository {
 
 func (r *PostRepository) List() ([]*entities.Post, error) {
 	var posts []Post
-	if err := r.Conn.Table("posts").Select("posts.id, users.name as username, posts.user_id, posts.title, posts.body, posts.created_at, posts.updated_at").Joins("JOIN users ON posts.user_id = users.id").Order("posts.id DESC").Scan(&posts).Error; err != nil {
+	if err := r.Conn.Table("posts").Select("posts.id, users.name as username, posts.user_id, posts.title, posts.body, posts.created_at, posts.updated_at").Where("posts.deleted_at IS NULL").Joins("JOIN users ON posts.user_id = users.id").Order("posts.id DESC").Scan(&posts).Error; err != nil {
 		return nil, err
 	}
 	fmt.Printf("%+v\n", posts)
@@ -40,11 +41,20 @@ func (r *PostRepository) List() ([]*entities.Post, error) {
 
 func (r *PostRepository) GetPostById(id int) (*entities.Post, error) {
 	var post Post
-	if err := r.Conn.Table("posts").Select("posts.id, users.name as username, posts.user_id, posts.title, posts.body, posts.created_at, posts.updated_at").Joins("JOIN users ON posts.user_id = users.id").Where("posts.id = ?", id).First(&post).Error; err != nil {
+	if err := r.Conn.Table("posts").Select("posts.id, users.name as username, posts.user_id, posts.title, posts.body, posts.created_at, posts.updated_at").Joins("JOIN users ON posts.user_id = users.id").Where("posts.id = ? AND posts.deleted_at IS NULL", id).First(&post).Error; err != nil {
 		return nil, err
 	}
 	fmt.Printf("%+v\n", post)
 	return entities.NewPost(post.Id, post.Title, post.Body, post.UserId, post.Username, post.CreatedAt, post.UpdatedAt), nil
+}
+
+func (r *PostRepository) DeletePost(id int) error {
+	t := time.Now()
+	//　レコードを論理削除する
+	if err := r.Conn.Table("posts").Where("id = ? AND deleted_at IS NULL", id).Update("deleted_at", t.Format(time.DateTime)).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 func convertPostRepositoryModelToEntity(v []Post) []*entities.Post {
@@ -65,4 +75,12 @@ func (r *PostRepository) Create(userId int, title, body string) (*entities.PostF
 		return nil, err
 	}
 	return &post, nil
+}
+
+func (r *PostRepository) Update(id int, title, body string) (*entities.Post, error) {
+
+	if err := r.Conn.Table("posts").Where("id = ?", id).Update("title", title).Update("body", body).Error; err != nil {
+		return nil, err
+	}
+	return r.GetPostById(id)
 }

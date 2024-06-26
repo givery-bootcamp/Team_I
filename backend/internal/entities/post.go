@@ -3,7 +3,9 @@ package entities
 type PostRepository interface {
 	List() ([]*Post, error)
 	GetPostById(id int) (*Post, error)
+	DeletePost(id int) error
 	Create(userId int, title, body string) (*PostForInsert, error)
+	Update(id int, title, body string) (*Post, error)
 }
 
 type Post struct {

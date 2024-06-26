@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
-import {useAuth} from "./AuthContext.tsx";
+import { useAuth } from "../context/useAuth.ts";
+
 
 const Navigation = () => {
-    const {isLoggedIn} = useAuth();
+    const { isLoggedIn } = useAuth();
     return (
         <nav className="bg-gray-100 p-4 shadow-md">
             <ul className="space-y-4">

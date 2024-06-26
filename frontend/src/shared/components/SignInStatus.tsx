@@ -1,40 +1,39 @@
 import React from 'react';
-import {useAuth} from './AuthContext.tsx';
-import API_BASE_URL from "../../config.ts";
+import { useAuth } from '../context/useAuth.ts'
+import {signOut as apiSignOut} from "../services/apiService.ts";
+import {useNavigate} from "react-router-dom";
+
 
 const SignInStatus: React.FC = () => {
-    const {isLoggedIn, userName, signOut} = useAuth();
+    const {isLoggedIn, user, signOut} = useAuth();
+    const navigate = useNavigate();
+
 
     const handleSignOut = async () => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/signout`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-            });
-            if (!response.ok) {
-                throw new Error('Sign out failed');
-            }
-        } catch (error) {
-            console.error(error);
-        }
-
+        await apiSignOut();
         signOut();
+    }
+
+    const handleSignIn = async () => {
+        navigate('/signin');
     }
 
     return (
         <div className="flex items-center space-x-4">
             {isLoggedIn ? (
                 <>
-                    <span>{userName}</span>
+                    <span>{user?.name}</span>
                     <button onClick={handleSignOut} className="btn">
                         サインアウト
                     </button>
                 </>
             ) : (
-                <span></span>
+                <>
+                    <span></span>
+                    <button onClick={handleSignIn} className="btn">
+                        サインイン
+                    </button>
+                </>
             )}
         </div>
     );

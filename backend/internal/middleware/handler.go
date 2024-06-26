@@ -32,9 +32,18 @@ func (h *Handler) GetPostById(ctx *gin.Context) {
 	controllers.GetPostById(ctx, usecase)
 }
 
+func (h *Handler) DeletePost(ctx *gin.Context) {
+	usecase := usecases.NewDeletePostUsecase(h.PostRepository)
+	controllers.DeletePost(ctx, usecase)
+}
 func (h *Handler) PostPost(ctx *gin.Context) {
 	usecase := usecases.NewCreatePostUsecase(h.PostRepository)
 	controllers.PostPost(ctx, usecase)
+}
+
+func (h *Handler) PutPostById(ctx *gin.Context) {
+	usecase := usecases.NewUpdatePostUsecase(h.PostRepository)
+	controllers.PutPostById(ctx, usecase)
 }
 
 func (h *Handler) PostSignin(ctx *gin.Context) {
