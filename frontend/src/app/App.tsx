@@ -2,7 +2,7 @@ import {BrowserRouter as Router} from 'react-router-dom';
 import Navigation from '../shared/components/Navigation';
 import Header from '../shared/components/Header';
 import AppRouter from './AppRouter';
-import {AuthProvider} from '../shared/components/AuthContext';
+import AuthProvider from '../shared/context/AuthContext';
 import {AlertHandler, AlertProvider} from '../shared/components/AlertContext';
 
 function App() {
