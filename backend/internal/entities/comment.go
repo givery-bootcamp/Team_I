@@ -1,12 +1,14 @@
 package entities
 
-import "time"
+import (
+	"time"
+)
 
 type CommentRepository interface {
 	GetListByPostId(post_id int) ([]*Comment, error)
 	Create(comment *Comment) (*Comment, error)
 	Update(comment *Comment) (*Comment, error)
-	// DeleteComment(id int) error
+	Delete(comment_id int) error
 }
 
 type Comment struct {

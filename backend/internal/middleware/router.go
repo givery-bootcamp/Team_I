@@ -41,4 +41,5 @@ func SetupRoutes(app *gin.Engine, db *gorm.DB) {
 
 	authGroup.POST("/comments", h.PostComment)
 	authGroup.PUT("/comments/:id", h.PutComment)
+	authGroup.DELETE("/comments/:id", h.DeleteComment)
 }

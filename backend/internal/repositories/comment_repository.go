@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"myapp/internal/entities"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -18,7 +19,7 @@ func NewCommentRepository(conn *gorm.DB) *CommentRepository {
 
 func (r *CommentRepository) GetListByPostId(post_id int) ([]*entities.Comment, error) {
 	var comments []*entities.Comment
-	if err := r.Conn.Table("comments").Select("comments.id, comments.user_id, comments.post_id, users.name as username, comments.body, comments.created_at, comments.updated_at").Joins("JOIN users ON comments.user_id = users.id").Where("comments.post_id = ?", post_id).Order("comments.id ASC").Scan(&comments).Error; err != nil {
+	if err := r.Conn.Table("comments").Select("comments.id, comments.user_id, comments.post_id, users.name as username, comments.body, comments.created_at, comments.updated_at").Where("comments.deleted_at IS NULL").Joins("JOIN users ON comments.user_id = users.id").Where("comments.post_id = ?", post_id).Order("comments.id ASC").Scan(&comments).Error; err != nil {
 		return nil, err
 	}
 	return comments, nil
@@ -39,4 +40,12 @@ func (r *CommentRepository) Update(comment *entities.Comment) (*entities.Comment
 		return nil, err
 	}
 	return comment, nil
+}
+
+func (r *CommentRepository) Delete(comment_id int) error {
+	t := time.Now()
+	if err := r.Conn.Table("comments").Where("id = ? AND deleted_at IS NULL", comment_id).Update("deleted_at", t).Error; err != nil {
+		return err
+	}
+	return nil
 }

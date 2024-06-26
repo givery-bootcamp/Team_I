@@ -70,3 +70,8 @@ func (h *Handler) PutComment(ctx *gin.Context) {
 	usecase := usecases.NewUpdateCommentUsecase(h.CommentRepository)
 	controllers.PutComment(ctx, usecase)
 }
+
+func (h *Handler) DeleteComment(ctx *gin.Context) {
+	usecase := usecases.NewDeleteCommentUsecase(h.CommentRepository)
+	controllers.DeleteComment(ctx, usecase)
+}

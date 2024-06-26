@@ -58,3 +58,18 @@ func PutComment(ctx *gin.Context, usecase usecases.IUpdateCommentUsecase) {
 	}
 	ctx.JSON(http.StatusOK, result)
 }
+
+func DeleteComment(ctx *gin.Context, usecase usecases.IDeleteCommentUsecase) {
+	idString := ctx.Param("id")
+	id, err := strconv.Atoi(idString)
+	if err != nil {
+		ctx.String(http.StatusBadRequest, "Invalid ID format")
+		return
+	}
+	err = usecase.Execute(id)
+	if err != nil {
+		handleError(ctx, http.StatusBadRequest, err)
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
+}

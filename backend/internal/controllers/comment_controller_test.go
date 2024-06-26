@@ -165,3 +165,45 @@ func TestPutCommentController(t *testing.T) {
 	assert.Equal(t, body, responseComment.Body)
 
 }
+
+func TestDeleteCommentController(t *testing.T) {
+	// テストのためのデータ
+	user_id := 1
+	user_name := "taro"
+	comment_id := 2
+
+	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+	assert.NoError(t, err)
+	defer db.Close()
+
+	// GORMのモックデータベース接続を開く
+	dialector := mysql.New(mysql.Config{
+		Conn:                      db,
+		SkipInitializeWithVersion: true,
+	})
+	gormDB, err := gorm.Open(dialector, &gorm.Config{})
+	assert.NoError(t, err)
+
+	// Mockを定義する
+	mock.ExpectBegin()
+	mock.ExpectExec("UPDATE `comments` SET `deleted_at`=? WHERE id = ? AND deleted_at IS NULL").
+		WithArgs(AnyTime{}, comment_id).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+
+	// テスト用のHTTPリクエストを作成
+	gin.SetMode(gin.TestMode)
+	w := httptest.NewRecorder()
+	_, r := gin.CreateTestContext(w)
+	middleware.SetupRoutes(r, gormDB)
+
+	url := "/comments/" + strconv.Itoa(comment_id)
+	req, _ := http.NewRequest("DELETE", url, nil)
+	req.Header.Set("Content-Type", "application/json")
+	tokenString := getTestUserJwtStr(user_id, user_name)
+	req.AddCookie(&http.Cookie{Name: "jwt", Value: tokenString})
+
+	r.ServeHTTP(w, req)
+	assert.Equal(t, http.StatusOK, w.Code)
+
+}
