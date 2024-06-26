@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const SECRET_KEY = "secret"
@@ -31,7 +32,12 @@ func (u *PostSigninUsecase) Execute(username, password string) (*entities.User, 
 	if err != nil {
 		return nil, "", err
 	}
-	if user.Password != password {
+	passwordByte := []byte(password)
+	storedPasswordByte := []byte(user.Password)
+
+	err = bcrypt.CompareHashAndPassword(storedPasswordByte, passwordByte)
+
+	if err != nil {
 		return nil, "", ErrPasswordIncorrect
 	}
 
