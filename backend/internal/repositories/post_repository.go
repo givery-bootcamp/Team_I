@@ -1,9 +1,8 @@
 package repositories
 
 import (
-	"fmt"
-	"time"
 	"myapp/internal/entities"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -35,7 +34,7 @@ func (r *PostRepository) List() ([]*entities.Post, error) {
 	if err := r.Conn.Table("posts").Select("posts.id, users.name as username, posts.user_id, posts.title, posts.body, posts.created_at, posts.updated_at").Where("posts.deleted_at IS NULL").Joins("JOIN users ON posts.user_id = users.id").Order("posts.id DESC").Scan(&posts).Error; err != nil {
 		return nil, err
 	}
-	fmt.Printf("%+v\n", posts)
+
 	return convertPostRepositoryModelToEntity(posts), nil
 }
 
@@ -44,7 +43,7 @@ func (r *PostRepository) GetPostById(id int) (*entities.Post, error) {
 	if err := r.Conn.Table("posts").Select("posts.id, users.name as username, posts.user_id, posts.title, posts.body, posts.created_at, posts.updated_at").Joins("JOIN users ON posts.user_id = users.id").Where("posts.id = ? AND posts.deleted_at IS NULL", id).First(&post).Error; err != nil {
 		return nil, err
 	}
-	fmt.Printf("%+v\n", post)
+
 	return entities.NewPost(post.Id, post.Title, post.Body, post.UserId, post.Username, post.CreatedAt, post.UpdatedAt), nil
 }
 

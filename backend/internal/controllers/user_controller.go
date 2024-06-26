@@ -70,12 +70,13 @@ func GetUser(ctx *gin.Context, usecase *usecases.GetUserUsecase) {
 		handleError(ctx, http.StatusInternalServerError, errors.New("user info cannot be converted"))
 		return
 	}
-	userIdFloat, ok := userInfo["Id"].(float64)
+	userId, ok := userInfo["Id"].(int)
+	log.Printf("userId: %v", userId)
 	if !ok {
 		handleError(ctx, http.StatusInternalServerError, errors.New("user id not found"))
 		return
 	}
-	userId := int(userIdFloat)
+
 	user, err := usecase.Execute(userId)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
