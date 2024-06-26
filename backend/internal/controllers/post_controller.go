@@ -30,7 +30,8 @@ func GetPostById(ctx *gin.Context, usecase *usecases.GetPostByIdUsecase) {
 	}
 	// ctx.String(http.StatusOK, greetings[id])
 
-	result, err := usecase.Execute(id)
+	include_comments := true
+	result, err := usecase.Execute(id, include_comments)
 	if err != nil {
 		handleError(ctx, http.StatusInternalServerError, err)
 	} else if result != nil {

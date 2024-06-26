@@ -9,13 +9,14 @@ type PostRepository interface {
 }
 
 type Post struct {
-	Id        int    `json:"id"`
-	Title     string `json:"title"`
-	Body      string `json:"body"`
-	UserId    int    `json:"user_id"`
-	Username  string `json:"username"`
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
+	Id        int        `json:"id"`
+	Title     string     `json:"title"`
+	Body      string     `json:"body"`
+	UserId    int        `json:"user_id"`
+	Username  string     `json:"username"`
+	Comments  []*Comment `json:"comments,omitempty"`
+	CreatedAt string     `json:"created_at"`
+	UpdatedAt string     `json:"updated_at"`
 }
 
 type PostForInsert struct {
