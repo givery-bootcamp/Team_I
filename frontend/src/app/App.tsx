@@ -3,7 +3,7 @@ import Navigation from '../shared/components/Navigation';
 import Header from '../shared/components/Header';
 import AppRouter from './AppRouter';
 import AuthProvider from '../shared/context/AuthContext';
-import {AlertHandler, AlertProvider} from "../shared/components/AlertContext.tsx";
+import {AlertHandler, AlertProvider} from "../shared/components/AlertContext";
 
 
 function App() {
