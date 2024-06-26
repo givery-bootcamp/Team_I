@@ -12,7 +12,7 @@ type Post struct {
 	Body      string     `json:"body"`
 	UserId    int        `json:"user_id"`
 	Username  string     `json:"username"`
-	Comments  []*Comment `json:"comments"`
+	Comments  []*Comment `json:"comments,omitempty"`
 	CreatedAt string     `json:"created_at"`
 	UpdatedAt string     `json:"updated_at"`
 }
