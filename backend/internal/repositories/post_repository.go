@@ -29,9 +29,27 @@ func NewPostRepository(conn *gorm.DB) *PostRepository {
 	}
 }
 
-func (r *PostRepository) List() ([]*entities.Post, error) {
+func (r *PostRepository) List(page int, limit int) ([]*entities.Post, error) {
 	var posts []Post
-	if err := r.Conn.Table("posts").Select("posts.id, users.name as username, posts.user_id, posts.title, posts.body, posts.created_at, posts.updated_at").Where("posts.deleted_at IS NULL").Joins("JOIN users ON posts.user_id = users.id").Order("posts.id DESC").Scan(&posts).Error; err != nil {
+
+	if page <= 0 {
+		page = 1
+	}
+
+	if limit <= 0 {
+		limit = 10
+	}
+
+	offset := (page - 1) * limit
+
+	if err := r.Conn.Table("posts").
+		Select("posts.id, users.name as username, posts.user_id, posts.title, posts.body, posts.created_at, posts.updated_at").
+		Where("posts.deleted_at IS NULL").
+		Joins("JOIN users ON posts.user_id = users.id").
+		Order("posts.id DESC").
+		Offset(offset).
+		Limit(limit).
+		Scan(&posts).Error; err != nil {
 		return nil, err
 	}
 

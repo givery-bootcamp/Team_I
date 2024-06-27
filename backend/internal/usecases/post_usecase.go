@@ -15,8 +15,16 @@ func NewListPostUsecase(r *repositories.PostRepository) *ListPostUsecase {
 	}
 }
 
-func (u *ListPostUsecase) Execute() ([]*entities.Post, error) {
-	return u.repository.List()
+func (u *ListPostUsecase) Execute(page int, limit int) ([]*entities.Post, error) {
+	if page <= 0 {
+		page = 1
+	}
+
+	if limit <= 0 {
+		limit = 50
+	}
+
+	return u.repository.List(page, limit)
 }
 
 type GetPostByIdUsecase struct {
