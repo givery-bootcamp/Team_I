@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"myapp/internal/repositories"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -15,11 +14,9 @@ func SetupRoutes(app *gin.Engine, db *gorm.DB) {
 	h := NewHandler(postRepository, userRepository, commentRepository)
 
 	app.POST("/signin", h.PostSignin)
+
 	authGroup := app.Group("/")
 	authGroup.Use(AuthMiddleware)
-	authGroup.GET("", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{"message": "you are authorized"})
-	})
 
 	app.POST("/signout", h.PostSignout)
 

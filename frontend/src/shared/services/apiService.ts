@@ -24,25 +24,26 @@ const apiRequest = async <T = undefined>(url: string, method = 'GET', options?: 
     console.log('url', url);
     console.log('requestOptions', requestOptions);
     const response = await fetch(url, requestOptions);
-    if (!response.ok) {
-        console.error(`Failed to ${method}`, response);
 
-        // Extract error message
+    if (!response.ok) {
         let errorText = 'Unknown error occurred';
-        try {
-            const errorData = await response.json();
-            errorText = errorData.error || JSON.stringify(errorData);
-        } catch(e) {
-            // Failed to parse response
-            errorText = await response.text();
+        if (response.headers.get('content-type')?.includes('application/json')) {
+            try {
+                const errorData = await response.json();
+                errorText = errorData.error || JSON.stringify(errorData);
+            } catch(e) {
+                errorText = 'Error occurred while parsing the error message';
+            }
+        } else {
+            errorText = `HTTP error! status: ${response.status}`;
         }
         throw new Error(errorText);
     }
 
-    if (response.ok && response.headers.get('content-type')?.includes('application/json')) {
+    if (response.headers.get('content-type')?.includes('application/json')) {
         return response.json();
     } else {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`Could not get a valid JSON response. status: ${response.status}`);
     }
 };
 
@@ -60,3 +61,5 @@ export const signIn = (data: { name: string; password: string }): Promise<any> =
     apiRequest(`${API_BASE_URL}/signin`, 'POST', { data: { name: data.name, password: data.password } });
 
 export const signOut = (): Promise<any> => apiRequest(`${API_BASE_URL}/signout`, 'POST');
+
+export const getUser = (): Promise<any> => apiRequest(`${API_BASE_URL}/user`);
