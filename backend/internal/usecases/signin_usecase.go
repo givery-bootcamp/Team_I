@@ -4,15 +4,42 @@ import (
 	"fmt"
 	"myapp/internal/config"
 	"myapp/internal/entities"
-	"myapp/internal/repositories"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 )
 
-var ErrPasswordIncorrect = fmt.Errorf("password is incorrect")
-var ErrUserNotFound = repositories.ErrUserNotFound
+const errPasswordIncorrectMessage = "password is incorrect"
+const errUserNotFoundMessage = "user not found"
+const errUnknownMessage = "unknown error"
+
+var ErrPasswordIncorrect = fmt.Errorf(errPasswordIncorrectMessage)
+var ErrUserNotFound = fmt.Errorf(errUserNotFoundMessage)
+var ErrUnknown = fmt.Errorf(errUnknownMessage)
+
+type ErrSigninUsecase interface {
+	signinError() string
+}
+
+func WrapSigninUsecaseError(err error) error {
+	if err == nil {
+		return nil
+	}
+	er, ok := errors.Cause(err).(ErrSigninUsecase)
+	if !ok {
+		return errors.Wrap(err, ErrUnknown.Error())
+	}
+	switch er.signinError() {
+	case errPasswordIncorrectMessage:
+		return errors.Wrap(err, ErrPasswordIncorrect.Error())
+	case errUserNotFoundMessage:
+		return errors.Wrap(err, ErrUserNotFound.Error())
+	default:
+		return errors.Wrap(err, ErrUnknown.Error())
+	}
+}
 
 type PostSigninUsecase struct {
 	repository entities.UserRepository
@@ -29,7 +56,7 @@ func (u *PostSigninUsecase) Execute(username, password string) (*entities.User, 
 	// Call repository
 	user, err := u.repository.GetUserByName(username)
 	if err != nil {
-		return nil, "", err
+		return nil, "", WrapSigninUsecaseError(err)
 	}
 	passwordByte := []byte(password)
 	storedPasswordByte := []byte(user.Password)
