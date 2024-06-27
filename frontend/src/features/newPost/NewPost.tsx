@@ -10,7 +10,7 @@ interface IFormInput {
     title: string;
     content: string;
     tag: 'General' | 'FanMeeting';
-    meetingType: 'Official' | 'Unofficial';
+    meetingType: 'Official' | 'Yamada';
 }
 
 const NewPost: React.FC = () => {
@@ -87,7 +87,7 @@ const NewPost: React.FC = () => {
                                     {...register('meetingType')}
                                 >
                                     <option value="Official">公式</option>
-                                    <option value="Unofficial">非公式</option>
+                                    <option value="Yamada">山田</option>
                                 </select>
                             </div>
                         )}
