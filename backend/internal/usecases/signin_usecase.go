@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"fmt"
+	"myapp/internal/config"
 	"myapp/internal/entities"
 	"myapp/internal/repositories"
 	"time"
@@ -9,8 +10,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
-
-const SECRET_KEY = "secret"
 
 var ErrPasswordIncorrect = fmt.Errorf("password is incorrect")
 var ErrUserNotFound = repositories.ErrUserNotFound
@@ -49,7 +48,7 @@ func (u *PostSigninUsecase) Execute(username, password string) (*entities.User, 
 		"iat":  time.Now().Unix(),
 	})
 
-	tokenString, err := token.SignedString([]byte(SECRET_KEY))
+	tokenString, err := token.SignedString([]byte(config.SecretKey))
 	if err != nil {
 		return nil, "", err
 	}

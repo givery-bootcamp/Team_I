@@ -1,13 +1,12 @@
 package middleware
 
 import (
+	"myapp/internal/config"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
-
-const SECRET_KEY = "secret"
 
 func AuthMiddleware(ctx *gin.Context) {
 	// Cookieヘッダーからトークンを取得
@@ -18,7 +17,7 @@ func AuthMiddleware(ctx *gin.Context) {
 
 	// トークンの検証
 	payload, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return []byte(SECRET_KEY), nil
+		return []byte(config.SecretKey), nil
 	})
 
 	if err != nil || !payload.Valid {

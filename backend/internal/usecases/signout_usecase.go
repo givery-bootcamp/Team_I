@@ -1,6 +1,7 @@
 package usecases
 
 import (
+	"myapp/internal/config"
 	"myapp/internal/entities"
 	"myapp/internal/repositories"
 	"time"
@@ -25,7 +26,7 @@ func (u *PostSignoutUsecase) Execute() (string, error) {
 		"iat": time.Now().Unix(),
 	})
 
-	tokenString, err := token.SignedString([]byte(SECRET_KEY))
+	tokenString, err := token.SignedString([]byte(config.SecretKey))
 	if err != nil {
 		return tokenString, err
 	}
