@@ -5,7 +5,7 @@ import (
 )
 
 type IUpdateCommentUsecase interface {
-	Execute(id int, body string) (*entities.Comment, error)
+	Execute(user_id, comment_id int, body string) (*entities.Comment, error)
 }
 
 type UpdateCommentUsecase struct {
@@ -18,10 +18,17 @@ func NewUpdateCommentUsecase(r entities.CommentRepository) *UpdateCommentUsecase
 	}
 }
 
-func (u *UpdateCommentUsecase) Execute(id int, body string) (*entities.Comment, error) {
-	comment := entities.Comment{
-		Id:   id,
-		Body: body,
+func (u *UpdateCommentUsecase) Execute(user_id, comment_id int, body string) (*entities.Comment, error) {
+	// idでコメントを取得して、存在チェックをする
+	comment, err := u.repository.GetById(comment_id)
+	if err != nil {
+		return nil, &CommentNotFound{}
 	}
-	return u.repository.Update(&comment)
+	// ユーザーIDとコメントのユーザーIDが一致するかチェック
+	if user_id != comment.UserId {
+		return nil, &NoPermission{}
+	}
+	comment.Body = body
+	result, err := u.repository.Update(comment)
+	return result, err
 }

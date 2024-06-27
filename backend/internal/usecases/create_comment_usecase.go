@@ -2,6 +2,8 @@ package usecases
 
 import (
 	"myapp/internal/entities"
+
+	"github.com/go-sql-driver/mysql"
 )
 
 type CreateCommentUsecase struct {
@@ -20,5 +22,14 @@ func (u *CreateCommentUsecase) Execute(userId, postId int, body string) (*entiti
 		PostId: postId,
 		Body:   body,
 	}
-	return u.repository.Create(&comment)
+	result, err := u.repository.Create(&comment)
+	me, ok := err.(*mysql.MySQLError)
+
+	if !ok {
+		return result, err
+	}
+	if me.Number == 1452 {
+		return nil, &PostIdNotFound{}
+	}
+	return result, err
 }

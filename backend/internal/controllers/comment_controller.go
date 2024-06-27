@@ -39,8 +39,8 @@ type PutCommentInput struct {
 }
 
 func PutComment(ctx *gin.Context, usecase usecases.IUpdateCommentUsecase) {
-	idString := ctx.Param("id")
-	id, err := strconv.Atoi(idString)
+	commentIdString := ctx.Param("id")
+	commentId, err := strconv.Atoi(commentIdString)
 	if err != nil {
 		ctx.String(http.StatusBadRequest, "Invalid ID format")
 		return
@@ -51,7 +51,15 @@ func PutComment(ctx *gin.Context, usecase usecases.IUpdateCommentUsecase) {
 		handleError(ctx, http.StatusBadRequest, err)
 		return
 	}
-	result, err := usecase.Execute(id, putCommentInput.Body)
+	userInfoAny, exists := ctx.Get("userInfo")
+	if !exists {
+		handleError(ctx, http.StatusBadRequest, ErrUserInfoNotFound)
+		return
+	}
+	userInfo := userInfoAny.(map[string]any)
+	userId := userInfo["Id"].(int)
+
+	result, err := usecase.Execute(userId, commentId, putCommentInput.Body)
 	if err != nil {
 		handleError(ctx, http.StatusBadRequest, err)
 		return
@@ -60,13 +68,21 @@ func PutComment(ctx *gin.Context, usecase usecases.IUpdateCommentUsecase) {
 }
 
 func DeleteComment(ctx *gin.Context, usecase usecases.IDeleteCommentUsecase) {
-	idString := ctx.Param("id")
-	id, err := strconv.Atoi(idString)
+	commentIdString := ctx.Param("id")
+	commentId, err := strconv.Atoi(commentIdString)
 	if err != nil {
 		ctx.String(http.StatusBadRequest, "Invalid ID format")
 		return
 	}
-	err = usecase.Execute(id)
+	userInfoAny, exists := ctx.Get("userInfo")
+	if !exists {
+		handleError(ctx, http.StatusBadRequest, ErrUserInfoNotFound)
+		return
+	}
+	userInfo := userInfoAny.(map[string]any)
+	userId := userInfo["Id"].(int)
+
+	err = usecase.Execute(userId, commentId)
 	if err != nil {
 		handleError(ctx, http.StatusBadRequest, err)
 		return

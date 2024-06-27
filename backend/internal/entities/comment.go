@@ -5,6 +5,7 @@ import (
 )
 
 type CommentRepository interface {
+	GetById(comment_id int) (*Comment, error)
 	GetListByPostId(post_id int) ([]*Comment, error)
 	Create(comment *Comment) (*Comment, error)
 	Update(comment *Comment) (*Comment, error)

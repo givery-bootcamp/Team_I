@@ -5,7 +5,7 @@ import (
 )
 
 type IDeleteCommentUsecase interface {
-	Execute(comment_id int) error
+	Execute(user_id, comment_id int) error
 }
 
 type DeleteCommentUsecase struct {
@@ -18,6 +18,16 @@ func NewDeleteCommentUsecase(r entities.CommentRepository) *DeleteCommentUsecase
 	}
 }
 
-func (u *DeleteCommentUsecase) Execute(comment_id int) error {
-	return u.repository.Delete(comment_id)
+func (u *DeleteCommentUsecase) Execute(user_id, comment_id int) error {
+	// idでコメントを取得して、存在チェックをする
+	comment, err := u.repository.GetById(comment_id)
+	if err != nil {
+		return &CommentNotFound{}
+	}
+	// ユーザーIDとコメントのユーザーIDが一致するかチェック
+	if user_id != comment.UserId {
+		return &NoPermission{}
+	}
+	err = u.repository.Delete(comment_id)
+	return err
 }
