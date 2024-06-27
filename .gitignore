@@ -1,4 +1,5 @@
 /docker/mysql
+/docker/mysql-test
 node_modules/
 tmp/
 backend/myapp
