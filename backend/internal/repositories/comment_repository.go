@@ -4,6 +4,7 @@ import (
 	"myapp/internal/entities"
 	"time"
 
+	"github.com/go-sql-driver/mysql"
 	"gorm.io/gorm"
 )
 
@@ -35,7 +36,15 @@ func (r *CommentRepository) GetListByPostId(post_id int) ([]*entities.Comment, e
 
 func (r *CommentRepository) Create(comment *entities.Comment) (*entities.Comment, error) {
 	result := r.Conn.Table("comments").Select("UserId", "PostId", "Body").Create(comment)
+
 	if result.Error != nil {
+		me, ok := result.Error.(*mysql.MySQLError)
+		if !ok {
+			return nil, result.Error
+		}
+		if me.Number == FOREIGN_KEY_CONSTRAINTS_ERROR_NUMBER {
+			return nil, &PostIdNotFound{}
+		}
 		return nil, result.Error
 	}
 

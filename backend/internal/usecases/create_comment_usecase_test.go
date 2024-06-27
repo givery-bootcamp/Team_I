@@ -37,7 +37,7 @@ func TestPostWithSpecifiedPostidNotFound(t *testing.T) {
 	r := repositories.NewCommentRepository(db)
 	usecase := NewCreateCommentUsecase(r)
 	result, err := usecase.Execute(userId, post_id, body)
-	assert.Equal(t, err, &PostIdNotFound{})
+	assert.Equal(t, err, &repositories.PostIdNotFound{})
 	assert.Error(t, err)
 	assert.Nil(t, result)
 }
