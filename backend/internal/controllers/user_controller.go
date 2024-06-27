@@ -29,7 +29,7 @@ func PostSignin(ctx *gin.Context, usecase *usecases.PostSigninUsecase) {
 	if err != nil {
 		if err == usecases.ErrUserNotFound || err == usecases.ErrPasswordIncorrect {
 			log.Printf("Error in user authentication: %v", err)
-			handleError(ctx, http.StatusBadRequest, errors.New("incorrect username or password"))
+			handleError(ctx, http.StatusUnauthorized, errors.New("incorrect username or password"))
 		} else {
 			log.Printf("Unexpected error in PostSignin: %v", err)
 			handleError(ctx, http.StatusInternalServerError, err)
