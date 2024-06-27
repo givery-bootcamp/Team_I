@@ -20,7 +20,7 @@ var ErrUserNotFound = fmt.Errorf(errUserNotFoundMessage)
 var ErrUnknown = fmt.Errorf(errUnknownMessage)
 
 type ErrSigninUsecase interface {
-	signinError() string
+	SigninError() string
 }
 
 func WrapSigninUsecaseError(err error) error {
@@ -31,7 +31,7 @@ func WrapSigninUsecaseError(err error) error {
 	if !ok {
 		return errors.Wrap(err, ErrUnknown.Error())
 	}
-	switch er.signinError() {
+	switch er.SigninError() {
 	case errPasswordIncorrectMessage:
 		return errors.Wrap(err, ErrPasswordIncorrect.Error())
 	case errUserNotFoundMessage:
