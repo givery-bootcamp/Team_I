@@ -89,6 +89,7 @@ const PostDetail: React.FC = () => {
     return (
         // 投稿詳細を表示
         <div className="p-6 bg-white shadow-lg rounded-lg relative">
+            <div>
             <button onClick={() => navigate("/new-post")}
                     className="text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded absolute top-0 right-0 m-4">新しい投稿を作成
             </button>
@@ -106,6 +107,16 @@ const PostDetail: React.FC = () => {
             )}
 
             {error && <div className="text-red-500 mt-4">{error}</div>}
+            </div>
+            {post.comments?.length > 0 && post.comments.map(comment => {
+                return (
+                    <div key={comment.id} className="border-t border-gray-200 mt-4 pt-4">
+                        <p className="text-gray-600">ユーザー名: <span className="font-semibold">{comment.user_name}</span></p>
+                        <p className="text-gray-500">コメント: {comment.body}</p>
+                        <p className="text-gray-500">更新日: {comment.updated_at}</p>
+                    </div>
+                );
+                })}
             <ConfirmModal message={confirmMessage} modalRef={modalRef} onConfirm={onConfirm} onCancel={onCancel}></ConfirmModal>
         </div>
     );
