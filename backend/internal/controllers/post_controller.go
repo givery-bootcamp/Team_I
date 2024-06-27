@@ -19,7 +19,7 @@ func GetPosts(ctx *gin.Context, usecase *usecases.ListPostUsecase) {
 	} else if result != nil {
 		ctx.JSON(http.StatusOK, result)
 	} else {
-		handleError(ctx, http.StatusNotFound, errors.New("not found"))
+		ctx.JSON(http.StatusOK, []string{})
 	}
 }
 
