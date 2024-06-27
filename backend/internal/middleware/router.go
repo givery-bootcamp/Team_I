@@ -14,6 +14,7 @@ func SetupRoutes(app *gin.Engine) {
 	commentRepository := repositories.NewCommentRepository(db)
 	h := NewHandler(postRepository, userRepository, commentRepository)
 
+	app.POST("/signup", h.PostSignup)
 	app.POST("/signin", h.PostSignin)
 
 	authGroup := app.Group("/")

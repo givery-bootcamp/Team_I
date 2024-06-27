@@ -32,7 +32,6 @@ const SignIn: React.FC = () => {
                 id: response.id,
                 name: response.name,
             }
-            console.log(user)
 
             signIn(user);
 
