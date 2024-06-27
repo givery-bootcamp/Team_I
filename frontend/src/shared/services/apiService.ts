@@ -47,7 +47,27 @@ const apiRequest = async <T = undefined>(url: string, method = 'GET', options?: 
     }
 };
 
-export const fetchPosts = (): Promise<Post[]> => apiRequest(`${API_BASE_URL}/posts`);
+type FetchPostsOptions = {
+    page?: number;
+    limit?: number;
+}
+
+export const fetchPosts = (options: FetchPostsOptions = {}): Promise<Post[]> => {
+    let url = `${API_BASE_URL}/posts`;
+
+    const params = new URLSearchParams();
+    if (options.page != null) {
+        params.append('page', String(options.page));
+    }
+    if (options.limit != null) {
+        params.append('limit', String(options.limit));
+    }
+    if (params.toString()) {
+        url += `?${params.toString()}`;
+    }
+
+    return apiRequest(url);
+};
 
 export const fetchPostById = (id: number): Promise<Post> => apiRequest(`${API_BASE_URL}/posts/${id}`);
 
