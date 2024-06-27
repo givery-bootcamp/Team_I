@@ -1,12 +1,13 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Post} from '../../shared/models/Post';
 import {Link, useNavigate, useParams} from 'react-router-dom';
 import {useAuth} from '../../shared/context/useAuth';
-import {deletePost, fetchPostById} from '../../shared/services/apiService';
+import {createComment, deletePost, fetchPostById} from '../../shared/services/apiService';
 import {useAlert} from '../../shared/components/AlertContext';
 import ConfirmModal from '../../shared/components/Modal';
 import { useConfirmModal } from '../../shared/hooks/useConfirmModal';
-
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { CommentIFormInput } from '../../shared/models/Comment';
 
 const PostDetail: React.FC = () => {
     const [post, setPost] = useState<Post | null>(null);
@@ -14,6 +15,10 @@ const PostDetail: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const {postId} = useParams<{ postId: string }>();
     const navigate = useNavigate();
+    const [isAddComment, setIsAddComment] = useState(false);
+    const [newCommentError, setNewCommentError] = React.useState<string | null>(null);
+    const { register, handleSubmit, formState: { errors }, } = useForm<CommentIFormInput>();
+    
 
     const { user } = useAuth();
     const userId = user?.id;
@@ -22,6 +27,8 @@ const PostDetail: React.FC = () => {
 
     // Modalを表示するためのカスタムフック
     const {modalRef, confirmMessage, onConfirm, onCancel, customConfirm} = useConfirmModal();
+    // ボタン連打防止用のフラグ
+    const isProcessing = useRef(false);
 
     // ページが読み込まれた時に実行
     useEffect(() => {
@@ -86,6 +93,40 @@ const PostDetail: React.FC = () => {
         }
     }
 
+    const handleAddComment = () => {
+        setIsAddComment(!isAddComment);
+    }
+
+    
+    const onSubmit: SubmitHandler<CommentIFormInput> = async (data) => {
+        // 処理中なら何もしない
+        if (isProcessing.current) {
+            return;
+        }
+
+        try {
+            // 処理開始
+            isProcessing.current = true;
+            data.post_id = post.id;
+            await createComment(data);
+            
+            // 成功したらアラート
+            showAlert('コメントしました。');
+
+            // 成功したらぺージをリロード
+            window.location.reload();
+        } catch (err) {
+            if (err instanceof Error) {
+                setNewCommentError(err.message);
+            } else {
+                setNewCommentError('An unexpected error occurred');
+            }
+        } finally {
+            // 処理終了
+            isProcessing.current = false;
+        }
+    }
+
     return (
         // 投稿詳細を表示
         <div className="p-6 bg-white shadow-lg rounded-lg relative">
@@ -117,6 +158,33 @@ const PostDetail: React.FC = () => {
                     </div>
                 );
                 })}
+
+            {isAddComment ?
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <div className="mb-4">
+                        <label className="block text-gray-600 mb-2">内容</label>
+                        <textarea
+                            className={`w-full p-2 border ${errors.body ? 'border-red-500' : 'border-gray-300'} rounded-md`}
+                            {...register('body', {
+                                required: '内容は必須です。',
+                            })}
+                        />
+                        {/* 内容エラーメッセージ */}
+                        {errors.body && <div className="text-red-500 mt-2">{errors.body.message}</div>}
+                    </div>
+                    <button onClick={handleAddComment}
+                            className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 mx-4">キャンセル
+                    </button>
+                    <button type="submit"
+                            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 mx-4">投稿する
+                    </button>
+                    {newCommentError && <div className='text-red-500'>{newCommentError}</div>}
+                </form>
+                : 
+                <button onClick={handleAddComment} className="text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded m-4">
+                    コメントを追加する
+                </button>
+            }
             <ConfirmModal message={confirmMessage} modalRef={modalRef} onConfirm={onConfirm} onCancel={onCancel}></ConfirmModal>
         </div>
     );

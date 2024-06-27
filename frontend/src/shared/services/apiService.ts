@@ -1,6 +1,7 @@
 import {Post} from '../models/Post';
 import API_BASE_URL from '../../config';
 import {IFormInput} from '../models/Post.ts';
+import {CommentIFormInput} from '../models/Comment.ts';
 
 
 type APIRequestOptions<T = undefined> = T extends undefined ? undefined : {data: T};
@@ -23,6 +24,7 @@ const apiRequest = async <T = undefined>(url: string, method = 'GET', options?: 
 
     console.log('url', url);
     console.log('requestOptions', requestOptions);
+    console.log(requestData)
     const response = await fetch(url, requestOptions);
 
     if (!response.ok) {
@@ -86,3 +88,5 @@ export const signUp = (data: { name: string; password: string }): Promise<any> =
     apiRequest(`${API_BASE_URL}/signup`, 'POST', { data: { name: data.name, password: data.password } });
 
 export const getUser = (): Promise<any> => apiRequest(`${API_BASE_URL}/user`);
+
+export const createComment = (data: CommentIFormInput): Promise<any> => apiRequest(`${API_BASE_URL}/comments`, 'POST', {data});
