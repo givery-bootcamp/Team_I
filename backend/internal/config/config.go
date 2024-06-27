@@ -40,4 +40,7 @@ func init() {
 	if v := os.Getenv("DB_PASSWORD"); v != "" {
 		DBPassword = v
 	}
+	if v := os.Getenv("SECRET_KEY"); v != "" {
+		SecretKey = v
+	}
 }
