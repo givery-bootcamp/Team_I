@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -9,6 +9,8 @@ import { useAlert } from '../../shared/components/AlertContext';
 interface IFormInput {
     title: string;
     content: string;
+    tag: 'General' | 'FanMeeting';
+    meetingType: 'Official' | 'Unofficial';
 }
 
 const NewPost: React.FC = () => {
@@ -16,6 +18,11 @@ const NewPost: React.FC = () => {
     const [newPostError, setNewPostError] = React.useState<string | null>(null);
     const { register, handleSubmit, formState: { errors }, } = useForm<IFormInput>();
     const { showAlert } = useAlert();
+    const [tag, setTag] = useState<'General' | 'FanMeeting'>('General');
+
+    const handleTagChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setTag(event.target.value as 'General' | 'FanMeeting');
+    };
 
     // ボタン連打防止用のフラグ
     const isProcessing = useRef(false);
@@ -60,6 +67,31 @@ const NewPost: React.FC = () => {
             <div className="p-6 bg-white shadow-lg rounded-lg">
                 <h1 className="text-2xl font-bold text-gray-800 mb-4">新規投稿</h1>
                 <form onSubmit={handleSubmit(onSubmit)}>
+                    <div className="flex gap-4 mb-4">
+                        <div className="w-1/2">
+                            <label className="block text-gray-600 mb-2">タグ</label>
+                            <select
+                                className="w-full p-1 text-sm border border-gray-300 rounded-md"
+                                {...register('tag')}
+                                onChange={handleTagChange}
+                            >
+                                <option value="General">一般</option>
+                                <option value="FanMeeting">ファンミ告知</option>
+                            </select>
+                        </div>
+                        {tag === 'FanMeeting' && (
+                            <div className="w-1/2">
+                                <label className="block text-gray-600 mb-2">ファンミタイプ</label>
+                                <select
+                                    className="w-full p-1 text-sm border border-gray-300 rounded-md"
+                                    {...register('meetingType')}
+                                >
+                                    <option value="Official">公式</option>
+                                    <option value="Unofficial">非公式</option>
+                                </select>
+                            </div>
+                        )}
+                    </div>
                     <div className="mb-4">
                         <label className="block text-gray-600 mb-2">タイトル</label>
                         <input
@@ -68,8 +100,8 @@ const NewPost: React.FC = () => {
                             {...register('title', {
                                 required: 'タイトルは必須です。',
                                 pattern: {
-                                value: /^.{0,100}$/,
-                                message: 'タイトルは100文字以内です。',
+                                    value: /^.{0,100}$/,
+                                    message: 'タイトルは100文字以内です。',
                                 },
                             })}
                         />
@@ -87,7 +119,9 @@ const NewPost: React.FC = () => {
                         {/* 内容エラーメッセージ */}
                         {errors.content && <div className="text-red-500 mt-2">{errors.content.message}</div>}
                     </div>
-                    <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">投稿する</button>
+                    <button type="submit"
+                            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">投稿する
+                    </button>
                     {newPostError && <div className='text-red-500'>{newPostError}</div>}
                 </form>
             </div>
