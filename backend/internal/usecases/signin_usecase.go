@@ -12,11 +12,11 @@ import (
 )
 
 const errPasswordIncorrectMessage = "password is incorrect"
-const errUserNotFoundMessage = "user not found"
+const ErrUserNotFoundMessage = "user not found"
 const errUnknownMessage = "unknown error"
 
 var ErrPasswordIncorrect = fmt.Errorf(errPasswordIncorrectMessage)
-var ErrUserNotFound = fmt.Errorf(errUserNotFoundMessage)
+var ErrUserNotFound = fmt.Errorf(ErrUserNotFoundMessage)
 var ErrUnknown = fmt.Errorf(errUnknownMessage)
 
 type ErrSigninUsecase interface {
@@ -34,7 +34,7 @@ func WrapSigninUsecaseError(err error) error {
 	switch er.SigninError() {
 	case errPasswordIncorrectMessage:
 		return errors.Wrap(err, ErrPasswordIncorrect.Error())
-	case errUserNotFoundMessage:
+	case ErrUserNotFoundMessage:
 		return errors.Wrap(err, ErrUserNotFound.Error())
 	default:
 		return errors.Wrap(err, ErrUnknown.Error())

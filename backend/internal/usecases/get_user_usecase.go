@@ -2,14 +2,13 @@ package usecases
 
 import (
 	"myapp/internal/entities"
-	"myapp/internal/repositories"
 )
 
 type GetUserUsecase struct {
 	repository entities.UserRepository
 }
 
-func NewGetUserUsecase(r *repositories.UserRepository) *GetUserUsecase {
+func NewGetUserUsecase(r entities.UserRepository) *GetUserUsecase {
 	return &GetUserUsecase{
 		repository: r,
 	}
