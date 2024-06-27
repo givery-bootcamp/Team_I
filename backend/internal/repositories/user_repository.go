@@ -52,3 +52,14 @@ func (r *UserRepository) GetUserByName(name string) (*entities.User, error) {
 	user := result[0]
 	return entities.NewUser(user.Id, user.Name, user.Password, user.CreatedAt, user.UpdatedAt), nil
 }
+
+func (r *UserRepository) Create(name, hashedPassword string) (*entities.User, error) {
+	user := entities.User{
+		Name:     name,
+		Password: hashedPassword,
+	}
+	if err := r.Conn.Table("users").Select("name", "password").Create(&user).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}

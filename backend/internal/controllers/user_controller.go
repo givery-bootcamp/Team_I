@@ -90,3 +90,28 @@ func GetUser(ctx *gin.Context, usecase *usecases.GetUserUsecase) {
 
 	ctx.JSON(http.StatusOK, user)
 }
+
+func PostSignup(ctx *gin.Context, usecase *usecases.PostSignupUsecase) {
+
+	var json JsonRequestUser
+	if err := ctx.ShouldBindJSON(&json); err != nil {
+		log.Printf("Error binding JSON: %v", err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	username, password := json.Name, json.Password
+	user, err := usecase.Execute(username, password)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			handleError(ctx, http.StatusNotFound, errors.New("user not found"))
+		} else {
+			log.Printf("Unexpected error in PostSignup: %v", err)
+			handleError(ctx, http.StatusInternalServerError, err)
+		}
+		return
+	}
+
+	ctx.JSON(http.StatusOK, user)
+
+}

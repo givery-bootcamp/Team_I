@@ -1,6 +1,7 @@
 package entities
 
 type UserRepository interface {
+	Create(username, password string) (*User, error)
 	GetUserById(id int) (*User, error)
 	GetUserByName(name string) (*User, error)
 }
