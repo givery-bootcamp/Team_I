@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {ChangeEvent, useState} from 'react';
 import { useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -19,10 +19,15 @@ const NewPost: React.FC = () => {
     const { register, handleSubmit, formState: { errors }, } = useForm<IFormInput>();
     const { showAlert } = useAlert();
     const [tag, setTag] = useState<'General' | 'FanMeeting'>('General');
+    const [meetingType, setMeetingType] = useState<'Official' | 'Yamada'>('Official');
 
     const handleTagChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setTag(event.target.value as 'General' | 'FanMeeting');
     };
+
+    const handleMeetingTypeChange = (event: ChangeEvent<HTMLSelectElement>) => {
+        setMeetingType(event.target.value as 'Official' | 'Yamada');
+    }
 
     // ボタン連打防止用のフラグ
     const isProcessing = useRef(false);
@@ -65,7 +70,13 @@ const NewPost: React.FC = () => {
     return (
         <AuthRequired>
             <div className="p-6 bg-white shadow-lg rounded-lg">
-                <h1 className="text-2xl font-bold text-gray-800 mb-4">新規投稿</h1>
+                <div className="flex items-center mb-4">
+                    <h1 className="text-2xl font-bold text-gray-800">新規投稿</h1>
+                    {(tag === 'FanMeeting') && (
+                        <img src={meetingType === 'Official' ? '/nagatani.png' : '/yamada.png'}
+                             alt={meetingType} className="ml-4 w-8"/>
+                    )}
+                </div>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="flex gap-4 mb-4">
                         <div className="w-1/2">
@@ -85,6 +96,7 @@ const NewPost: React.FC = () => {
                                 <select
                                     className="w-full p-1 text-sm border border-gray-300 rounded-md"
                                     {...register('meetingType')}
+                                    onChange={handleMeetingTypeChange}
                                 >
                                     <option value="Official">公式</option>
                                     <option value="Yamada">山田</option>
