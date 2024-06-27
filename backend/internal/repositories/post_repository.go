@@ -37,7 +37,7 @@ func (r *PostRepository) List(page int, limit int) ([]*entities.Post, error) {
 	}
 
 	if limit <= 0 {
-		limit = 10
+		limit = 50
 	}
 
 	offset := (page - 1) * limit
