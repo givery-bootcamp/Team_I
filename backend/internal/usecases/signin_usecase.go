@@ -18,7 +18,7 @@ type PostSigninUsecase struct {
 	repository entities.UserRepository
 }
 
-func NewPostSigninUsecase(r *repositories.UserRepository) *PostSigninUsecase {
+func NewPostSigninUsecase(r entities.UserRepository) *PostSigninUsecase {
 	return &PostSigninUsecase{
 		repository: r,
 	}
