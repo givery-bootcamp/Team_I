@@ -17,7 +17,7 @@ func main() {
 	app := gin.Default()
 	app.Use(middleware.Transaction())
 	app.Use(middleware.Cors())
-	middleware.SetupRoutes(app)
+	middleware.SetupRoutes(app, external.DB)
 
 	app.Run(fmt.Sprintf("%s:%d", config.HostName, config.Port))
 }
