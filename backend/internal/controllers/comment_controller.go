@@ -71,5 +71,5 @@ func DeleteComment(ctx *gin.Context, usecase usecases.IDeleteCommentUsecase) {
 		handleError(ctx, http.StatusBadRequest, err)
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
+	ctx.JSON(http.StatusNoContent, gin.H{"message": "success"})
 }

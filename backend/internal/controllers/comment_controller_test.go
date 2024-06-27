@@ -1,3 +1,5 @@
+// このファイルはchihiroのコメント機能のテストファイルです。
+// レイヤーごとのテストを書くのが面倒だったので、APIのテストを書いています。
 package controllers_test
 
 import (
@@ -31,7 +33,9 @@ func (a AnyTime) Match(v driver.Value) bool {
 	return ok
 }
 
-func getTestUserJwtStr(id int, name string) string {
+const SECRET_KEY = "secret"
+
+func getTestUserJwtStr(id int, name, secret_key string) string {
 	// トークンの発行（ヘッダー・ペイロード）
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"Name": name,
@@ -40,7 +44,7 @@ func getTestUserJwtStr(id int, name string) string {
 		"iat":  time.Now().Unix(),
 	})
 
-	tokenString, err := token.SignedString([]byte(middleware.SECRET_KEY))
+	tokenString, err := token.SignedString([]byte(secret_key))
 	if err != nil {
 		panic(err)
 	}
@@ -90,7 +94,7 @@ func TestPostCommentController(t *testing.T) {
 	}
 	req, _ := http.NewRequest("POST", "/comments", bytes.NewBuffer(jsonBytes))
 	req.Header.Set("Content-Type", "application/json")
-	tokenString := getTestUserJwtStr(user_id, user_name)
+	tokenString := getTestUserJwtStr(user_id, user_name, SECRET_KEY)
 	req.AddCookie(&http.Cookie{Name: "jwt", Value: tokenString})
 
 	r.ServeHTTP(w, req)
@@ -150,7 +154,7 @@ func TestPutCommentController(t *testing.T) {
 	url := "/comments/" + strconv.Itoa(comment_id)
 	req, _ := http.NewRequest("PUT", url, bytes.NewBuffer(jsonBytes))
 	req.Header.Set("Content-Type", "application/json")
-	tokenString := getTestUserJwtStr(user_id, user_name)
+	tokenString := getTestUserJwtStr(user_id, user_name, SECRET_KEY)
 	req.AddCookie(&http.Cookie{Name: "jwt", Value: tokenString})
 
 	r.ServeHTTP(w, req)
@@ -200,10 +204,10 @@ func TestDeleteCommentController(t *testing.T) {
 	url := "/comments/" + strconv.Itoa(comment_id)
 	req, _ := http.NewRequest("DELETE", url, nil)
 	req.Header.Set("Content-Type", "application/json")
-	tokenString := getTestUserJwtStr(user_id, user_name)
+	tokenString := getTestUserJwtStr(user_id, user_name, SECRET_KEY)
 	req.AddCookie(&http.Cookie{Name: "jwt", Value: tokenString})
 
 	r.ServeHTTP(w, req)
-	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, http.StatusNoContent, w.Code)
 
 }
