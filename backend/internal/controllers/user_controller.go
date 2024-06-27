@@ -103,12 +103,12 @@ func PostSignup(ctx *gin.Context, usecase *usecases.PostSignupUsecase) {
 	username, password := json.Name, json.Password
 	user, err := usecase.Execute(username, password)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			handleError(ctx, http.StatusNotFound, errors.New("user not found"))
-		} else {
+		if err == usecases.ErrUnexpected {
 			log.Printf("Unexpected error in PostSignup: %v", err)
 			handleError(ctx, http.StatusInternalServerError, err)
+			return
 		}
+		handleError(ctx, http.StatusBadRequest, err)
 		return
 	}
 

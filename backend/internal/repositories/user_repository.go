@@ -53,6 +53,17 @@ func (r *UserRepository) GetUserByName(name string) (*entities.User, error) {
 	return entities.NewUser(user.Id, user.Name, user.Password, user.CreatedAt, user.UpdatedAt), nil
 }
 
+func (r *UserRepository) UserExists(name string) (bool, error) {
+	var result []User
+	if err := r.Conn.Table("users").Select("name").Where("name = ?", name).Scan(&result).Error; err != nil {
+		return false, err
+	}
+	if len(result) == 0 {
+		return false, nil
+	}
+	return true, nil
+}
+
 var ErrOnCreate = fmt.Errorf("repository error on create")
 
 func (r *UserRepository) Create(name, hashedPassword string) (*entities.User, error) {

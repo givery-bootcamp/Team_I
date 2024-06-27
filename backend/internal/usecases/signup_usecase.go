@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"fmt"
+	"log"
 	"myapp/internal/entities"
 	"myapp/internal/repositories"
 	"regexp"
@@ -23,6 +24,7 @@ var ErrUserAlreadyExists = fmt.Errorf("user name already exists")
 var ErrPasswordTooShort = fmt.Errorf("password is too short")
 var ErrNotASCII = fmt.Errorf("password must be ASCII")
 var ErrNotAlphaNumeric = fmt.Errorf("name must be alphanumeric")
+var ErrUnexpected = fmt.Errorf("unexpected error")
 
 func isAlphaNumeric(s string) bool {
 	re := regexp.MustCompile("^[a-zA-Z0-9]+$")
@@ -40,14 +42,15 @@ func (u *PostSignupUsecase) Execute(name, password string) (*entities.User, erro
 		return nil, ErrNotAlphaNumeric
 	}
 	// ユーザ名が既に存在するかチェック
-	_, err := u.repository.GetUserByName(name)
-	// 既にユーザが存在する場合はエラーを返す
-	if err == nil {
-		return nil, ErrUserAlreadyExists
+	userExists, err := u.repository.UserExists(name)
+	// 予期してないエラーの場合Unexpectedを返す
+	if err != nil {
+		log.Println(err)
+		return nil, ErrUnexpected
 	}
-	// ユーザが存在しない場合以外のエラーはそのまま返す
-	if err != ErrUserNotFound {
-		return nil, err
+	// 既にユーザが存在する場合はエラーを返す
+	if userExists {
+		return nil, ErrUserAlreadyExists
 	}
 
 	// パスワードがASCII範囲の英数記号のみから成るかチェック
@@ -64,5 +67,10 @@ func (u *PostSignupUsecase) Execute(name, password string) (*entities.User, erro
 	hashedPasswordByte, _ := bcrypt.GenerateFromPassword(passwordByte, 10)
 	hashedPassword := string(hashedPasswordByte)
 
-	return u.repository.Create(name, hashedPassword)
+	user, err := u.repository.Create(name, hashedPassword)
+	if err != nil {
+		log.Println(err)
+		return nil, ErrUnexpected
+	}
+	return user, nil
 }
