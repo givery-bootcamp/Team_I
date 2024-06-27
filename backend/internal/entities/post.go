@@ -1,7 +1,7 @@
 package entities
 
 type PostRepository interface {
-	List() ([]*Post, error)
+	List(page int, limit int) ([]*Post, error)
 	GetPostById(id int) (*Post, error)
 	DeletePost(id int) error
 	Create(userId int, title, body string) (*PostForInsert, error)

@@ -11,7 +11,9 @@ import (
 )
 
 func GetPosts(ctx *gin.Context, usecase *usecases.ListPostUsecase) {
-	result, err := usecase.Execute()
+	page, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(ctx.DefaultQuery("limit", "50"))
+	result, err := usecase.Execute(page, limit)
 	if err != nil {
 		handleError(ctx, http.StatusInternalServerError, err)
 	} else if result != nil {
