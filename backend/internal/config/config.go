@@ -13,6 +13,7 @@ var DBPort = 3306
 var DBName = "training"
 var DBUsername = "root"
 var DBPassword = ""
+var SecretKey = "secret"
 
 func init() {
 	if v := os.Getenv("HOSTNAME"); v != "" {
@@ -38,5 +39,8 @@ func init() {
 	}
 	if v := os.Getenv("DB_PASSWORD"); v != "" {
 		DBPassword = v
+	}
+	if v := os.Getenv("SECRET_KEY"); v != "" {
+		SecretKey = v
 	}
 }
