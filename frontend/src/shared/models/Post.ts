@@ -4,6 +4,8 @@ export interface Post {
     body: string;
     user_id: number;
     username: string;
+    tag: string;
+    type: string;
     created_at: string;
     updated_at: string;
 }

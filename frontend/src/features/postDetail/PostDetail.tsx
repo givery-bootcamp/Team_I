@@ -2,10 +2,13 @@ import React, {useEffect, useState} from 'react';
 import {Post} from '../../shared/models/Post';
 import {Link, useNavigate, useParams} from 'react-router-dom';
 import {useAuth} from '../../shared/context/useAuth';
-import {deletePost, fetchPostById} from '../../shared/services/apiService';
+import {deletePost, fetchPostById, postIntention, fetchIntentionState} from '../../shared/services/apiService';
 import {useAlert} from '../../shared/components/AlertContext';
 import ConfirmModal from '../../shared/components/Modal';
 import { useConfirmModal } from '../../shared/hooks/useConfirmModal';
+
+
+export type IntentionState = 'attend' | 'skip'
 
 
 const PostDetail: React.FC = () => {
@@ -19,6 +22,13 @@ const PostDetail: React.FC = () => {
     const userId = user?.id;
 
     const {showAlert} = useAlert();
+
+    const [intention, setIntention] = useState<IntentionState | null>(null);
+    const [attendees, setAttendees] = useState<string[]>([]);
+    const [nonAttendees, setNonAttendees] = useState<string[]>([]);
+
+    const [isHoveringAttendees, setIsHoveringAttendees] = useState(false);
+    const [isHoveringNonAttendees, setIsHoveringNonAttendees] = useState(false);
 
     // Modalを表示するためのカスタムフック
     const {modalRef, confirmMessage, onConfirm, onCancel, customConfirm} = useConfirmModal();
@@ -41,11 +51,39 @@ const PostDetail: React.FC = () => {
                 setLoading(false);
             }
         };
-
         if (postId) {
             getPost();
         }
+
+        // Load attendees
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        fetchIntentionState(parseInt(postId!, 10), 'attend')
+            .then(data => setAttendees(data.usernames)); // Adjust as per your API response
+
+        // Load non-attendees
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        fetchIntentionState(parseInt(postId!, 10), 'skip')
+            .then(data => setNonAttendees(data.usernames)); // Adjust as per your API response
     }, [postId]);
+
+    const handleIntention = (intention: IntentionState) => {
+        // Make sure user id exists.
+        if (!userId || !post) {
+            return;
+        }
+
+        postIntention(post.id, intention, userId)
+            .then(() => {
+                setIntention(intention);
+                intention === 'attend' ?
+                    setAttendees(prev => [...prev, user?.name]) :
+                    setNonAttendees(prev => [...prev, user?.name]);
+            })
+            .catch((error) => {
+                console.error(error);
+                setError('Failed to post response');
+            });
+    };
 
     // ローディング中の場合
     if (loading) {
@@ -87,7 +125,6 @@ const PostDetail: React.FC = () => {
     }
 
     return (
-        // 投稿詳細を表示
         <div className="p-6 bg-white shadow-lg rounded-lg relative">
             <button onClick={() => navigate("/new-post")}
                     className="text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded absolute top-0 right-0 m-4">新しい投稿を作成
@@ -96,7 +133,6 @@ const PostDetail: React.FC = () => {
             <p className="text-gray-600">ユーザー名: <span className="font-semibold">{post.username}</span></p>
             <p className="text-gray-500">更新日: {post.updated_at}</p>
             <p className="text-gray-500 mt-4">{post.body}</p>
-            <Link to="/" className="text-blue-500 mt-4 block">ホームに戻る</Link>
 
             {userId === post.user_id && (
                 <div className="mt-4">
@@ -106,7 +142,49 @@ const PostDetail: React.FC = () => {
             )}
 
             {error && <div className="text-red-500 mt-4">{error}</div>}
-            <ConfirmModal message={confirmMessage} modalRef={modalRef} onConfirm={onConfirm} onCancel={onCancel}></ConfirmModal>
+
+            {post.tag === 'FanMeeting' && (
+                <div className="mt-4">
+                    <button
+                        onClick={() => handleIntention('attend')}
+                        disabled={loading}
+                        className={intention === 'attend' ? 'button-attend' : ''}>
+                        Attend
+                    </button>
+                    <button
+                        onClick={() => handleIntention('skip')}
+                        disabled={loading}
+                        className={intention === 'skip' ? 'button-attend' : ''}>
+                        Not Attend
+                    </button>
+                </div>
+            )}
+
+            <div
+                onMouseEnter={() => setIsHoveringAttendees(true)}
+                onMouseLeave={() => setIsHoveringAttendees(false)}
+            >
+                <h3>Attendees</h3>
+                {isHoveringAttendees && attendees.map(name => (
+                    <p key={name}>{name}</p>
+                ))}
+            </div>
+            <div
+                onMouseEnter={() => setIsHoveringNonAttendees(true)}
+                onMouseLeave={() => setIsHoveringNonAttendees(false)}
+            >
+                <h3>Non Attendees</h3>
+                {isHoveringNonAttendees && nonAttendees.map(name => (
+                    <p key={name}>{name}</p>
+                ))}
+            </div>
+
+            <Link to="/" className="text-blue-500 mt-4 block">ホームに戻る</Link>
+
+            <ConfirmModal message={confirmMessage}
+                          modalRef={modalRef}
+                          onConfirm={onConfirm}
+                          onCancel={onCancel}></ConfirmModal>
         </div>
     );
 }

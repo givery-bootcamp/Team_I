@@ -1,4 +1,5 @@
 import {Post} from '../models/Post';
+import {IntentionState} from '../../features/postDetail/PostDetail';
 import API_BASE_URL from '../../config';
 import {IFormInput} from '../models/Post.ts';
 
@@ -86,3 +87,16 @@ export const signUp = (data: { name: string; password: string }): Promise<any> =
     apiRequest(`${API_BASE_URL}/signup`, 'POST', { data: { name: data.name, password: data.password } });
 
 export const getUser = (): Promise<any> => apiRequest(`${API_BASE_URL}/user`);
+
+export const postIntention = (postId: number, state: IntentionState, userId: number): Promise<any> => {
+    return apiRequest(`${API_BASE_URL}/intention/${postId}`, 'POST', {
+        data: {
+            state,
+            user_id: userId
+        }
+    });
+};
+
+export const fetchIntentionState = (postId: number, state: IntentionState): Promise<any> => {
+    return apiRequest(`${API_BASE_URL}/intention/${postId}?state=${state}`);
+};
