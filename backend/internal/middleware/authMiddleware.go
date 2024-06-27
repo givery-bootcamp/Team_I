@@ -13,7 +13,7 @@ func AuthMiddleware(ctx *gin.Context) {
 	// Cookieヘッダーからトークンを取得
 	tokenString, err := ctx.Cookie("jwt")
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Cookie jwt could not be found"})
 	}
 
 	// トークンの検証
@@ -22,14 +22,14 @@ func AuthMiddleware(ctx *gin.Context) {
 	})
 
 	if err != nil || !payload.Valid {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "JWT is invalid"})
 		ctx.Abort()
 		return
 	}
 
 	claims, ok := payload.Claims.(jwt.MapClaims)
 	if !ok {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "JWT claims could not be read"})
 		ctx.Abort()
 		return
 	}
