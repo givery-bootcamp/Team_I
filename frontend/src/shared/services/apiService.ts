@@ -40,6 +40,10 @@ const apiRequest = async <T = undefined>(url: string, method = 'GET', options?: 
         throw new Error(errorText);
     }
 
+    if (response.status === 204) {
+        return;
+    }
+    
     if (response.headers.get('content-type')?.includes('application/json')) {
         return response.json();
     } else {
