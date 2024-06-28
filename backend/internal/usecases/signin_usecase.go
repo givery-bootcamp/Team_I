@@ -30,8 +30,8 @@ func WrapSigninUsecaseError(err error) error {
 		return errors.Wrap(err, ErrUnknown.Error())
 	}
 	switch er.SigninError() {
-	case errPasswordIncorrectMessage:
-		return errors.Wrap(err, ErrPasswordIncorrect.Error())
+	case ErrUserNotFoundMessage:
+		return errors.Wrap(err, ErrUserNotFound.Error())
 	default:
 		return errors.Wrap(err, ErrUnknown.Error())
 	}
