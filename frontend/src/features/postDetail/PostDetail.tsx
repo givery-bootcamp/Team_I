@@ -304,7 +304,7 @@ const PostDetail: React.FC = () => {
 
                 {error && <div className="text-red-500 mt-4">{error}</div>}
 
-                {(post.type === 'official' || post.type === 'yamada') && (
+                {(post.type === 'Official' || post.type === 'Yamada') && (
                     <>
                         <div className="mt-4">
                             <button

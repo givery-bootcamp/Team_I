@@ -10,7 +10,7 @@ import (
 )
 
 type IntentionRequest struct {
-	Status string `json:"status"`
+	Status string `json:"state"`
 }
 
 func GetIntention(ctx *gin.Context, usecase *usecases.GetIntentionUsecase) {
