@@ -304,51 +304,51 @@ const PostDetail: React.FC = () => {
 
                 {error && <div className="text-red-500 mt-4">{error}</div>}
 
-                {post.type === 'official' || 'yamada' && (
-                    <div className="mt-4">
-                        <button
-                            onClick={() => handleIntention('attend')}
-                            disabled={loading}
-                            className={
-                            `flex-1 mr-2 py-2 px-4 rounded bg-blue-500 hover:bg-blue-600 text-white font-semibold
+                {(post.type === 'official' || post.type === 'yamada') && (
+                    <>
+                        <div className="mt-4">
+                            <button
+                                onClick={() => handleIntention('attend')}
+                                disabled={loading}
+                                className={`flex-1 mr-2 py-2 px-4 rounded bg-blue-500 hover:bg-blue-600 text-white font-semibold
                             ${intention === 'attend' ? 'opacity-100' : 'opacity-50'}`}
-                        >
-                            参加
-                        </button>
-                        <button
-                            onClick={() => handleIntention('skip')}
-                            disabled={loading}
-                            className={
-                            `flex-1 ml-2 py-2 px-4 rounded bg-red-500 hover:bg-red-600 text-white font-semibold
+                            >
+                                参加
+                            </button>
+                            <button
+                                onClick={() => handleIntention('skip')}
+                                disabled={loading}
+                                className={`flex-1 ml-2 py-2 px-4 rounded bg-red-500 hover:bg-red-600 text-white font-semibold
                             ${intention === 'skip' ? 'opacity-100' : 'opacity-50'}`}
-                        >
-                            不参加
-                        </button>
-                    </div>
+                            >
+                                不参加
+                            </button>
+                        </div>
+
+                        <div className="flex gap-8">
+                            <div
+                                onMouseEnter={() => setIsHoveringAttendees(true)}
+                                onMouseLeave={() => setIsHoveringAttendees(false)}
+                            >
+                                <h3 className="inline-block py-1 px-2 text-sm rounded-full bg-blue-500 text-white my-2">Attendees</h3>
+                                {isHoveringAttendees && attendees.map(name => (
+                                    <p key={name}>{name}</p>
+                                ))}
+                            </div>
+                            <div
+                                onMouseEnter={() => setIsHoveringNonAttendees(true)}
+                                onMouseLeave={() => setIsHoveringNonAttendees(false)}
+                            >
+                                <h3 className="inline-block py-1 px-2 text-sm rounded-full bg-blue-500 text-white my-2">Non
+                                    Attendees</h3>
+                                {isHoveringNonAttendees && nonAttendees.map(name => (
+                                    <p key={name}>{name}</p>
+                                ))}
+                            </div>
+                        </div>
+                    </>
                 )}
 
-
-                <div className="flex gap-8">
-                    <div
-                        onMouseEnter={() => setIsHoveringAttendees(true)}
-                        onMouseLeave={() => setIsHoveringAttendees(false)}
-                    >
-                        <h3 className="inline-block py-1 px-2 text-sm rounded-full bg-blue-500 text-white my-2">Attendees</h3>
-                        {isHoveringAttendees && attendees.map(name => (
-                            <p key={name}>{name}</p>
-                        ))}
-                    </div>
-                    <div
-                        onMouseEnter={() => setIsHoveringNonAttendees(true)}
-                        onMouseLeave={() => setIsHoveringNonAttendees(false)}
-                    >
-                        <h3 className="inline-block py-1 px-2 text-sm rounded-full bg-blue-500 text-white my-2">Non
-                            Attendees</h3>
-                        {isHoveringNonAttendees && nonAttendees.map(name => (
-                            <p key={name}>{name}</p>
-                        ))}
-                    </div>
-                </div>
 
                 <Link to="/" className="text-blue-500 mt-4 block">ホームに戻る</Link>
 
