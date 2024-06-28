@@ -3,7 +3,7 @@ import React from "react";
 
 const YamadaMeeting: React.FC = () => {
     return (
-        <PostList type="yamada" />
+        <PostList type="Yamada" />
     );
 };
 
