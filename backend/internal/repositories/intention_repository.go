@@ -65,7 +65,6 @@ func (r *IntentionRepository) Exists(userId int, postId int) (bool, error) {
 		Scan(&intention).Error; err != nil {
 		return false, err
 	}
-	fmt.Printf("%v", intention)
 	return len(intention) > 0, nil
 }
 

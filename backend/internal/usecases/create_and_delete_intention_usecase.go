@@ -1,7 +1,6 @@
 package usecases
 
 import (
-	"fmt"
 	"myapp/internal/entities"
 )
 
@@ -19,7 +18,6 @@ func NewCreateIntentionUsecase(intensionRepo entities.IntentionRepository, userR
 
 func (u *CreateIntentionUsecase) Execute(userId int, postId int, status string) (*entities.IntentionForInsert, error) {
 	exists, err := u.intentionRepository.Exists(userId, postId)
-	fmt.Println("Intention exists: ", exists)
 	if err != nil {
 		return nil, WrapUsecaseError(err)
 	}
