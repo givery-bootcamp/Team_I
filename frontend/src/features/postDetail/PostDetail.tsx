@@ -1,12 +1,134 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Post} from '../../shared/models/Post';
 import {Link, useNavigate, useParams} from 'react-router-dom';
 import {useAuth} from '../../shared/context/useAuth';
-import {deletePost, fetchPostById} from '../../shared/services/apiService';
+import {createComment, deleteComment, deletePost, fetchPostById, updateComment} from '../../shared/services/apiService';
 import {useAlert} from '../../shared/components/AlertContext';
 import ConfirmModal from '../../shared/components/Modal';
 import { useConfirmModal } from '../../shared/hooks/useConfirmModal';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { Comment, CommentIFormInput } from '../../shared/models/Comment';
 
+interface CommentCardProps {
+    comment: Comment;
+    userId: number | undefined;
+    setError: (message: string) => void;
+    customConfirm: (message: string) => Promise<boolean>;
+}
+
+
+
+const CommentCard: React.FC<CommentCardProps> = ({comment, userId, setError, customConfirm}) => {
+    const [isEditComment, setIsEditComment] = useState(false);
+    const { register, handleSubmit, setValue, formState: { errors }, } = useForm<CommentIFormInput>();
+    const [newCommentError, setNewCommentError] = React.useState<string | null>(null);
+    const {showAlert} = useAlert();
+    // ボタン連打防止用のフラグ
+    const isProcessing = useRef(false);
+
+    useEffect(() => {
+        setValue('body', comment.body);
+    }   , [comment.body, setValue]);
+                
+    const handleEditComment = () => {
+        setIsEditComment(!isEditComment);
+    }
+    
+    const onSubmit: SubmitHandler<CommentIFormInput> = async (data) => {
+        // 処理中なら何もしない
+        if (isProcessing.current) {
+            return;
+        }
+
+        try {
+            // 処理開始
+            isProcessing.current = true;
+            await updateComment(data, comment.id);
+            showAlert('投稿が更新されました。');
+            // ページをリロード
+            window.location.reload();
+        } catch (err) {
+            if (err instanceof Error) {
+                setNewCommentError(err.message);
+            } else {
+                setNewCommentError('An unexpected error occurred');
+            }
+        } finally {
+            // 処理終了
+            isProcessing.current = false;
+        }
+    };
+
+    // コメントを削除する関数
+    const handleDeleteComment = async (comment_id: number) => {
+        // モーダルを表示
+        const result = await customConfirm('コメントを削除しますか？');
+        if (result) {
+            try {
+                // コメントを削除
+                await deleteComment(comment_id);
+                showAlert('コメントが削除されました');
+                // ページをリロード
+                window.location.reload();
+            } catch (err) {
+                if (err instanceof Error) {
+                    setError(err.message);
+                } else {
+                    setError('An unexpected error occurred');
+                }
+            }
+        }
+    }
+
+    return (
+        <div className="p-4 bg-white shadow-lg rounded-lg">
+            {(isEditComment 
+            ? 
+            <div className="border-t border-gray-200 mt-4  pt-4">
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <div className="mb-4">
+                        <label className="block text-gray-600 mb-2">コメント</label>
+                        <textarea
+                            className={`w-full p-2 border ${errors.body ? 'border-red-500' : 'border-gray-300'} rounded-md`}
+                            {...register('body', {
+                                required: 'コメントは必須です。',
+                            })}
+                        />
+                        {/* コメントエラーメッセージ */}
+                        {errors.body && <div className="text-red-500 mt-2">{errors.body.message}</div>}
+                    </div>
+                    <button onClick={handleEditComment}
+                            className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 mx-4">キャンセル
+                    </button>
+                    <button type="submit"
+                            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 mx-4">更新する
+                    </button>
+                    {newCommentError && <div className='text-red-500'>{newCommentError}</div>}
+                </form>
+            </div>
+            :<div className="border-t border-gray-200">
+                <div key={comment.id} className='m-4'>
+                    <div className='my-4'>
+                        <p>{comment.body}</p>
+                    </div>
+                    <div>
+                        <p className="text-gray-600 text-xs">ユーザー名: <span className="font-semibold">{comment.user_name}</span></p>
+                        <p className="text-gray-500 text-xs">更新日: {comment.updated_at}</p>    
+                    </div>
+                    
+                </div>
+                { comment.user_id === userId &&
+                    <div className="t-4">
+                        <button onClick={handleEditComment} className="text-blue-500 mr-4">編集</button>
+                        <button onClick={() => handleDeleteComment(comment.id)} className="text-red-500">削除</button>
+                    </div>
+                }   
+            </div> 
+            
+            )}
+        </div>
+    );
+}
 
 const PostDetail: React.FC = () => {
     const [post, setPost] = useState<Post | null>(null);
@@ -14,6 +136,10 @@ const PostDetail: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const {postId} = useParams<{ postId: string }>();
     const navigate = useNavigate();
+    const [isAddComment, setIsAddComment] = useState(false);
+    const [newCommentError, setNewCommentError] = React.useState<string | null>(null);
+    const { register, handleSubmit, formState: { errors }, } = useForm<CommentIFormInput>();
+    
 
     const { user } = useAuth();
     const userId = user?.id;
@@ -22,6 +148,8 @@ const PostDetail: React.FC = () => {
 
     // Modalを表示するためのカスタムフック
     const {modalRef, confirmMessage, onConfirm, onCancel, customConfirm} = useConfirmModal();
+    // ボタン連打防止用のフラグ
+    const isProcessing = useRef(false);
 
     // ページが読み込まれた時に実行
     useEffect(() => {
@@ -86,9 +214,44 @@ const PostDetail: React.FC = () => {
         }
     }
 
+    const handleAddComment = () => {
+        setIsAddComment(!isAddComment);
+    }
+
+    
+    const onSubmit: SubmitHandler<CommentIFormInput> = async (data) => {
+        // 処理中なら何もしない
+        if (isProcessing.current) {
+            return;
+        }
+
+        try {
+            // 処理開始
+            isProcessing.current = true;
+            data.post_id = post.id;
+            await createComment(data);
+            
+            // 成功したらアラート
+            showAlert('コメントしました。');
+
+            // 成功したらぺージをリロード
+            window.location.reload();
+        } catch (err) {
+            if (err instanceof Error) {
+                setNewCommentError(err.message);
+            } else {
+                setNewCommentError('An unexpected error occurred');
+            }
+        } finally {
+            // 処理終了
+            isProcessing.current = false;
+        }
+    }
+
     return (
         // 投稿詳細を表示
         <div className="p-6 bg-white shadow-lg rounded-lg relative">
+            <div>
             <button onClick={() => navigate("/new-post")}
                     className="text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded absolute top-0 right-0 m-4">新しい投稿を作成
             </button>
@@ -106,6 +269,43 @@ const PostDetail: React.FC = () => {
             )}
 
             {error && <div className="text-red-500 mt-4">{error}</div>}
+            </div>
+            {/* コメントのidがuserのidと一致するときに編集ボタンを表示 */}
+            {post.comments?.length > 0 && post.comments.map(comment => {
+                return (
+                    <CommentCard key={comment.id} comment={comment} userId={userId} setError={setError} customConfirm={customConfirm} />
+                );
+                })
+            }
+
+            {isAddComment ?
+            <div className="p-4 mt-2 bg-white shadow-lg rounded-lg">
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <div className="mb-4">
+                        <label className="block text-gray-600 mb-2">コメント</label>
+                        <textarea
+                            className={`w-full p-2 border ${errors.body ? 'border-red-500' : 'border-gray-300'} rounded-md`}
+                            {...register('body', {
+                                required: 'コメントは必須です。',
+                            })}
+                        />
+                        {/* コメントエラーメッセージ */}
+                        {errors.body && <div className="text-red-500 mt-2">{errors.body.message}</div>}
+                    </div>
+                    <button onClick={handleAddComment}
+                            className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 mx-4">キャンセル
+                    </button>
+                    <button type="submit"
+                            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 mx-4">投稿する
+                    </button>
+                    {newCommentError && <div className='text-red-500'>{newCommentError}</div>}
+                </form>
+            </div>
+                : 
+                <button onClick={handleAddComment} className="text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded m-4">
+                    コメントを追加する
+                </button>
+            }
             <ConfirmModal message={confirmMessage} modalRef={modalRef} onConfirm={onConfirm} onCancel={onCancel}></ConfirmModal>
         </div>
     );
