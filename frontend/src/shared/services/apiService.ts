@@ -1,4 +1,5 @@
 import {Post} from '../models/Post';
+import {IntentionState} from '../../features/postDetail/PostDetail';
 import API_BASE_URL from '../../config';
 import {IFormInput} from '../models/Post.ts';
 import {CommentIFormInput} from '../models/Comment.ts';
@@ -102,3 +103,16 @@ export const createComment = (data: CommentIFormInput): Promise<any> => apiReque
 export const deleteComment = (comment_id: number): Promise<void> => apiRequest(`${API_BASE_URL}/comments/${comment_id}`, 'DELETE');
 
 export const updateComment = (data: CommentIFormInput, comment_id: number): Promise<any> => apiRequest(`${API_BASE_URL}/comments/${comment_id}`, 'PUT', {data});
+
+export const postIntention = (postId: number, state: IntentionState, userId: number): Promise<any> => {
+    return apiRequest(`${API_BASE_URL}/intention/${postId}`, 'POST', {
+        data: {
+            state,
+            user_id: userId
+        }
+    });
+};
+
+export const fetchIntentionState = (postId: number, state: IntentionState): Promise<any> => {
+    return apiRequest(`${API_BASE_URL}/intention/${postId}?state=${state}`);
+};

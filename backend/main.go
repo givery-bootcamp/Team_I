@@ -5,6 +5,7 @@ import (
 	"log"
 	"myapp/internal/config"
 	"myapp/internal/external/database"
+	"myapp/internal/external/database/seed"
 	"myapp/internal/middleware"
 
 	"github.com/gin-gonic/gin"
@@ -24,6 +25,10 @@ func main() {
 	if err != nil {
 		log.Printf("AutoMigration failed: %v", err)
 		return
+	}
+
+	if err = seed.SeedDatabase(database.DB); err != nil {
+		log.Fatal("failed to seeding database: ", err)
 	}
 
 	err = app.Run(fmt.Sprintf("%s:%d", config.HostName, config.Port))

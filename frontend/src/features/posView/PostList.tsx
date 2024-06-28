@@ -52,18 +52,26 @@ const PostList: React.FC<PostListProps> = ({ type }) => {
                       className='block border-b mb-6 last:border-b-0 last:mb-0 last:pb-0 hover:bg-gray-100 transition-colors duration-200'>
                     <div key={post.id} className="border-b last:border-b-0 last:mb-0 last:pb-0">
                         <h2 className="text-2xl font-bold text-gray-800 mb-2">{post.title}</h2>
-                        <p className="text-gray-600">ユーザー名: <span className="font-semibold">{post.username}</span></p>
+                        <p className="text-gray-600">ユーザー名: <span className="font-semibold">{post.username}</span>
+                        </p>
                         <p className="text-gray-500">更新日: {post.updated_at}</p>
                     </div>
                 </Link>
             ))}
-            <div className="mt-4 d-flex justify-content-center">
-                <button className="mx-2" onClick={() => setPage(prevPage => Math.max(prevPage - 1, 1))} disabled={page === 1}>
-                    Previous Page: {page - 1}
+            <div className="mt-4 d-flex justify-content-center bg-light py-3 rounded">
+                <button
+                    className="mx-2 btn btn-outline-secondary rounded-full shadow-sm transition duration-200 ease-in-out text-sm border px-4 py-2"
+                    onClick={() => setPage(prevPage => Math.max(prevPage - 1, 1))}
+                    disabled={page === 1}
+                >
+                    前のページ: {page - 1}
                 </button>
-                <span>Current Page: {page}</span>
-                <button className="mx-2" onClick={() => setPage(prevPage => prevPage + 1)}>
-                    Next Page: {page + 1}
+                <span className="align-self-center mx-3 text-sm font-normal">現在のページ: {page}</span>
+                <button
+                    className="mx-2 btn btn-outline-secondary rounded-full shadow-sm transition duration-200 ease-in-out text-sm border px-4 py-2"
+                    onClick={() => setPage(prevPage => prevPage + 1)}
+                >
+                    次のページ: {page + 1}
                 </button>
             </div>
         </div>
