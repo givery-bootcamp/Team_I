@@ -35,5 +35,5 @@ type Intentions struct {
 	gorm.Model
 	UserID int    `gorm:"not null"`
 	PostID int    `gorm:"not null"`
-	status string `gorm:"type:varchar(20)"`
+	Status string `gorm:"type:varchar(20)"`
 }
