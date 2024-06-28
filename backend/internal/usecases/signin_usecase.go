@@ -21,17 +21,22 @@ type ErrSigninUsecase interface {
 	SigninError() string
 }
 
+// ユースケースが知っているエラーかどうかを判定し、エラーをラップする
 func WrapSigninUsecaseError(err error) error {
 	if err == nil {
 		return nil
 	}
+	// インターフェースを使ってエラーを判定
 	er, ok := errors.Cause(err).(ErrSigninUsecase)
+	// インターフェースを実装してなければ、知らないエラーとして扱う
 	if !ok {
 		return errors.Wrap(err, ErrUnknown.Error())
 	}
+	// 定義されたエラーかどうかを判定
 	switch er.SigninError() {
 	case ErrUserNotFoundMessage:
 		return errors.Wrap(err, ErrUserNotFound.Error())
+	// ここは本来実行されない。リポジトリ側の実装が不適切だった場合に実行される
 	default:
 		return errors.Wrap(err, ErrUnknown.Error())
 	}
