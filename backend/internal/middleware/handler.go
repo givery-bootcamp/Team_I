@@ -65,3 +65,18 @@ func (h *Handler) GetUser(ctx *gin.Context) {
 	usecase := usecases.NewGetUserUsecase(h.UserRepository)
 	controllers.GetUser(ctx, usecase)
 }
+
+func (h *Handler) PostComment(ctx *gin.Context) {
+	usecase := usecases.NewCreateCommentUsecase(h.CommentRepository)
+	controllers.PostComment(ctx, usecase)
+}
+
+func (h *Handler) PutComment(ctx *gin.Context) {
+	usecase := usecases.NewUpdateCommentUsecase(h.CommentRepository)
+	controllers.PutComment(ctx, usecase)
+}
+
+func (h *Handler) DeleteComment(ctx *gin.Context) {
+	usecase := usecases.NewDeleteCommentUsecase(h.CommentRepository)
+	controllers.DeleteComment(ctx, usecase)
+}

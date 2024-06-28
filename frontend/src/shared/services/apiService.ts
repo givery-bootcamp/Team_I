@@ -82,4 +82,7 @@ export const signIn = (data: { name: string; password: string }): Promise<any> =
 
 export const signOut = (): Promise<any> => apiRequest(`${API_BASE_URL}/signout`, 'POST');
 
+export const signUp = (data: { name: string; password: string }): Promise<any> =>
+    apiRequest(`${API_BASE_URL}/signup`, 'POST', { data: { name: data.name, password: data.password } });
+
 export const getUser = (): Promise<any> => apiRequest(`${API_BASE_URL}/user`);

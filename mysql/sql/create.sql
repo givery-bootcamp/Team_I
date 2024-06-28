@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS posts(
   user_id    INT          NOT NULL,
   title      VARCHAR(100) NOT NULL,
   body       TEXT         NOT NULL,
+  type       VARCHAR(20),
+  tag        VARCHAR(20),
   created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   deleted_at DATETIME     NULL,

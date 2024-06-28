@@ -16,10 +16,10 @@ func GetPosts(ctx *gin.Context, usecase *usecases.ListPostUsecase) {
 	result, err := usecase.Execute(page, limit)
 	if err != nil {
 		handleError(ctx, http.StatusInternalServerError, err)
-	} else if result != nil {
-		ctx.JSON(http.StatusOK, result)
+	} else if result == nil {
+		ctx.JSON(http.StatusOK, []string{})
 	} else {
-		handleError(ctx, http.StatusNotFound, errors.New("not found"))
+		ctx.JSON(http.StatusOK, result)
 	}
 }
 
