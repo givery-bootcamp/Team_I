@@ -7,8 +7,9 @@ type User struct {
 	Name     string `gorm:"type:varchar(40);not null;unique"`
 	Password string `gorm:"type:varchar(100);not null"`
 
-	Posts    []Post    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	Comments []Comment `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Posts      []Post       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Comments   []Comment    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Intentions []Intentions `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type Post struct {
@@ -19,7 +20,8 @@ type Post struct {
 	Type   string `gorm:"type:varchar(20)"`
 	Tag    string `gorm:"type:varchar(20)"`
 
-	Comments []Comment `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Comments   []Comment    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Intentions []Intentions `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type Comment struct {
@@ -27,4 +29,11 @@ type Comment struct {
 	UserID int    `gorm:"not null"`
 	PostID int    `gorm:"not null"`
 	Body   string `gorm:"type:text;not null"`
+}
+
+type Intentions struct {
+	gorm.Model
+	UserID int    `gorm:"not null"`
+	PostID int    `gorm:"not null"`
+	status string `gorm:"type:varchar(20)"`
 }

@@ -20,7 +20,7 @@ func main() {
 	app.Use(middleware.Cors())
 	middleware.SetupRoutes(app, database.DB)
 
-	err := database.DB.AutoMigrate(&database.User{}, &database.Post{}, &database.Comment{})
+	err := database.DB.AutoMigrate(&database.User{}, &database.Post{}, &database.Comment{}, &database.Intentions{})
 	if err != nil {
 		log.Printf("AutoMigration failed: %v", err)
 		return
