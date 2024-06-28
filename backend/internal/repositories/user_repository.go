@@ -7,12 +7,12 @@ import (
 	"gorm.io/gorm"
 )
 
-type ErrUserRepository struct {
-	errorMsg string
-}
-
 var ErrUserNotFound = &ErrUserRepository{
 	errorMsg: "user not found",
+}
+
+type ErrUserRepository struct {
+	errorMsg string
 }
 
 func (e *ErrUserRepository) Error() string {
