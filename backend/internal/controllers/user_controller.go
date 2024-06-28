@@ -36,6 +36,7 @@ func PostSignin(ctx *gin.Context, usecase *usecases.PostSigninUsecase) {
 		}
 		return
 	}
+	user.Password = ""
 
 	ctx.SetSameSite(http.SameSiteStrictMode)
 	// ヘッダーにトークンをセット
@@ -87,6 +88,7 @@ func GetUser(ctx *gin.Context, usecase *usecases.GetUserUsecase) {
 		}
 		return
 	}
+	user.Password = ""
 
 	ctx.JSON(http.StatusOK, user)
 }
@@ -111,6 +113,7 @@ func PostSignup(ctx *gin.Context, usecase *usecases.PostSignupUsecase) {
 		handleError(ctx, http.StatusBadRequest, err)
 		return
 	}
+	user.Password = ""
 
 	ctx.JSON(http.StatusOK, user)
 
