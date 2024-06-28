@@ -7,6 +7,8 @@ export interface Post {
     user_id: number;
     username: string;
     comments: Comment[];
+    tag: string;
+    type: string;
     created_at: string;
     updated_at: string;
 }

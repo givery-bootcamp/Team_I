@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {Post} from '../../shared/models/Post';
 import {Link, useNavigate, useParams} from 'react-router-dom';
 import {useAuth} from '../../shared/context/useAuth';
-import {createComment, deleteComment, deletePost, fetchPostById, updateComment} from '../../shared/services/apiService';
+import {deletePost, fetchPostById, postIntention, fetchIntentionState, createComment, deleteComment, updateComment} from '../../shared/services/apiService';
 import {useAlert} from '../../shared/components/AlertContext';
 import ConfirmModal from '../../shared/components/Modal';
 import { useConfirmModal } from '../../shared/hooks/useConfirmModal';
@@ -16,8 +16,6 @@ interface CommentCardProps {
     customConfirm: (message: string) => Promise<boolean>;
 }
 
-
-
 const CommentCard: React.FC<CommentCardProps> = ({comment, userId, setError, customConfirm}) => {
     const [isEditComment, setIsEditComment] = useState(false);
     const { register, handleSubmit, setValue, formState: { errors }, } = useForm<CommentIFormInput>();
@@ -29,11 +27,11 @@ const CommentCard: React.FC<CommentCardProps> = ({comment, userId, setError, cus
     useEffect(() => {
         setValue('body', comment.body);
     }   , [comment.body, setValue]);
-                
+
     const handleEditComment = () => {
         setIsEditComment(!isEditComment);
     }
-    
+
     const onSubmit: SubmitHandler<CommentIFormInput> = async (data) => {
         // 処理中なら何もしない
         if (isProcessing.current) {
@@ -82,8 +80,8 @@ const CommentCard: React.FC<CommentCardProps> = ({comment, userId, setError, cus
 
     return (
         <div className="p-4 bg-white shadow-lg rounded-lg">
-            {(isEditComment 
-            ? 
+            {(isEditComment
+            ?
             <div className="border-t border-gray-200 mt-4  pt-4">
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="mb-4">
@@ -113,22 +111,25 @@ const CommentCard: React.FC<CommentCardProps> = ({comment, userId, setError, cus
                     </div>
                     <div>
                         <p className="text-gray-600 text-xs">ユーザー名: <span className="font-semibold">{comment.user_name}</span></p>
-                        <p className="text-gray-500 text-xs">更新日: {comment.updated_at}</p>    
+                        <p className="text-gray-500 text-xs">更新日: {comment.updated_at}</p>
                     </div>
-                    
+
                 </div>
                 { comment.user_id === userId &&
                     <div className="t-4">
                         <button onClick={handleEditComment} className="text-blue-500 mr-4">編集</button>
                         <button onClick={() => handleDeleteComment(comment.id)} className="text-red-500">削除</button>
                     </div>
-                }   
-            </div> 
-            
+                }
+            </div>
+
             )}
         </div>
     );
 }
+
+export type IntentionState = 'attend' | 'skip'
+
 
 const PostDetail: React.FC = () => {
     const [post, setPost] = useState<Post | null>(null);
@@ -139,12 +140,19 @@ const PostDetail: React.FC = () => {
     const [isAddComment, setIsAddComment] = useState(false);
     const [newCommentError, setNewCommentError] = React.useState<string | null>(null);
     const { register, handleSubmit, formState: { errors }, } = useForm<CommentIFormInput>();
-    
+
 
     const { user } = useAuth();
     const userId = user?.id;
 
     const {showAlert} = useAlert();
+
+    const [intention, setIntention] = useState<IntentionState | null>(null);
+    const [attendees, setAttendees] = useState<string[]>([]);
+    const [nonAttendees, setNonAttendees] = useState<string[]>([]);
+
+    const [isHoveringAttendees, setIsHoveringAttendees] = useState(false);
+    const [isHoveringNonAttendees, setIsHoveringNonAttendees] = useState(false);
 
     // Modalを表示するためのカスタムフック
     const {modalRef, confirmMessage, onConfirm, onCancel, customConfirm} = useConfirmModal();
@@ -169,11 +177,39 @@ const PostDetail: React.FC = () => {
                 setLoading(false);
             }
         };
-
         if (postId) {
             getPost();
         }
+
+        // Load attendees
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        fetchIntentionState(parseInt(postId!, 10), 'attend')
+            .then(data => setAttendees(data.usernames)); // Adjust as per your API response
+
+        // Load non-attendees
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        fetchIntentionState(parseInt(postId!, 10), 'skip')
+            .then(data => setNonAttendees(data.usernames)); // Adjust as per your API response
     }, [postId]);
+
+    const handleIntention = (intention: IntentionState) => {
+        // Make sure user id exists.
+        if (!userId || !post) {
+            return;
+        }
+
+        postIntention(post.id, intention, userId)
+            .then(() => {
+                setIntention(intention);
+                intention === 'attend' ?
+                    setAttendees(prev => [...prev, user?.name]) :
+                    setNonAttendees(prev => [...prev, user?.name]);
+            })
+            .catch((error) => {
+                console.error(error);
+                setError('Failed to post response');
+            });
+    };
 
     // ローディング中の場合
     if (loading) {
@@ -218,7 +254,7 @@ const PostDetail: React.FC = () => {
         setIsAddComment(!isAddComment);
     }
 
-    
+
     const onSubmit: SubmitHandler<CommentIFormInput> = async (data) => {
         // 処理中なら何もしない
         if (isProcessing.current) {
@@ -230,7 +266,7 @@ const PostDetail: React.FC = () => {
             isProcessing.current = true;
             data.post_id = post.id;
             await createComment(data);
-            
+
             // 成功したらアラート
             showAlert('コメントしました。');
 
@@ -249,37 +285,91 @@ const PostDetail: React.FC = () => {
     }
 
     return (
-        // 投稿詳細を表示
         <div className="p-6 bg-white shadow-lg rounded-lg relative">
-            <div>
-            <button onClick={() => navigate("/new-post")}
-                    className="text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded absolute top-0 right-0 m-4">新しい投稿を作成
-            </button>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">{post.title}</h2>
-            <p className="text-gray-600">ユーザー名: <span className="font-semibold">{post.username}</span></p>
-            <p className="text-gray-500">更新日: {post.updated_at}</p>
-            <p className="text-gray-500 mt-4">{post.body}</p>
-            <Link to="/" className="text-blue-500 mt-4 block">ホームに戻る</Link>
+            <div className="p-6 bg-white shadow-lg rounded-lg relative">
+                <button onClick={() => navigate("/new-post")}
+                        className="text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded absolute top-0 right-0 m-4">新しい投稿を作成
+                </button>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">{post.title}</h2>
+                <p className="text-gray-600">ユーザー名: <span className="font-semibold">{post.username}</span></p>
+                <p className="text-gray-500">更新日: {post.updated_at}</p>
+                <p className="text-gray-500 mt-4">{post.body}</p>
 
-            {userId === post.user_id && (
-                <div className="mt-4">
-                    <Link to={`/posts/${post.id}/edit`} className="text-blue-500 mr-4">編集</Link>
-                    <button onClick={handleDelete} className="text-red-500">削除</button>
+                {userId === post.user_id && (
+                    <div className="mt-4">
+                        <Link to={`/posts/${post.id}/edit`} className="text-blue-500 mr-4">編集</Link>
+                        <button onClick={handleDelete} className="text-red-500">削除</button>
+                    </div>
+                )}
+
+                {error && <div className="text-red-500 mt-4">{error}</div>}
+
+                {post.type === 'official' || 'yamada' && (
+                    <div className="mt-4">
+                        <button
+                            onClick={() => handleIntention('attend')}
+                            disabled={loading}
+                            className={
+                            `flex-1 mr-2 py-2 px-4 rounded bg-blue-500 hover:bg-blue-600 text-white font-semibold
+                            ${intention === 'attend' ? 'opacity-100' : 'opacity-50'}`}
+                        >
+                            参加
+                        </button>
+                        <button
+                            onClick={() => handleIntention('skip')}
+                            disabled={loading}
+                            className={
+                            `flex-1 ml-2 py-2 px-4 rounded bg-red-500 hover:bg-red-600 text-white font-semibold
+                            ${intention === 'skip' ? 'opacity-100' : 'opacity-50'}`}
+                        >
+                            不参加
+                        </button>
+                    </div>
+                )}
+
+
+                <div className="flex gap-8">
+                    <div
+                        onMouseEnter={() => setIsHoveringAttendees(true)}
+                        onMouseLeave={() => setIsHoveringAttendees(false)}
+                    >
+                        <h3 className="inline-block py-1 px-2 text-sm rounded-full bg-blue-500 text-white my-2">Attendees</h3>
+                        {isHoveringAttendees && attendees.map(name => (
+                            <p key={name}>{name}</p>
+                        ))}
+                    </div>
+                    <div
+                        onMouseEnter={() => setIsHoveringNonAttendees(true)}
+                        onMouseLeave={() => setIsHoveringNonAttendees(false)}
+                    >
+                        <h3 className="inline-block py-1 px-2 text-sm rounded-full bg-blue-500 text-white my-2">Non
+                            Attendees</h3>
+                        {isHoveringNonAttendees && nonAttendees.map(name => (
+                            <p key={name}>{name}</p>
+                        ))}
+                    </div>
                 </div>
-            )}
 
-            {error && <div className="text-red-500 mt-4">{error}</div>}
+                <Link to="/" className="text-blue-500 mt-4 block">ホームに戻る</Link>
+
+                <ConfirmModal message={confirmMessage}
+                              modalRef={modalRef}
+                              onConfirm={onConfirm}
+                              onCancel={onCancel}></ConfirmModal>
+
             </div>
             {/* コメントのidがuserのidと一致するときに編集ボタンを表示 */}
             {post.comments?.length > 0 && post.comments.map(comment => {
                 return (
-                    <CommentCard key={comment.id} comment={comment} userId={userId} setError={setError} customConfirm={customConfirm} />
+                    <CommentCard key={comment.id} comment={comment} userId={userId} setError={setError}
+                                 customConfirm={customConfirm}/>
                 );
-                })
+            })
             }
 
+
             {isAddComment ?
-            <div className="p-4 mt-2 bg-white shadow-lg rounded-lg">
+                <div className="p-4 mt-2 bg-white shadow-lg rounded-lg">
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="mb-4">
                         <label className="block text-gray-600 mb-2">コメント</label>
@@ -301,7 +391,7 @@ const PostDetail: React.FC = () => {
                     {newCommentError && <div className='text-red-500'>{newCommentError}</div>}
                 </form>
             </div>
-                : 
+                :
                 <button onClick={handleAddComment} className="text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded m-4">
                     コメントを追加する
                 </button>
