@@ -9,16 +9,19 @@ import (
 )
 
 type Handler struct {
-	PostRepository    *repositories.PostRepository
-	UserRepository    *repositories.UserRepository
-	CommentRepository *repositories.CommentRepository
+	PostRepository      *repositories.PostRepository
+	UserRepository      *repositories.UserRepository
+	CommentRepository   *repositories.CommentRepository
+	IntentionRepository *repositories.IntentionRepository
 }
 
-func NewHandler(postRepository *repositories.PostRepository, userRepository *repositories.UserRepository, commentRepository *repositories.CommentRepository) *Handler {
+func NewHandler(postRepository *repositories.PostRepository, userRepository *repositories.UserRepository,
+	commentRepository *repositories.CommentRepository, intentionRepository *repositories.IntentionRepository) *Handler {
 	return &Handler{
-		PostRepository:    postRepository,
-		UserRepository:    userRepository,
-		CommentRepository: commentRepository,
+		PostRepository:      postRepository,
+		UserRepository:      userRepository,
+		CommentRepository:   commentRepository,
+		IntentionRepository: intentionRepository,
 	}
 }
 
@@ -80,4 +83,14 @@ func (h *Handler) PutComment(ctx *gin.Context) {
 func (h *Handler) DeleteComment(ctx *gin.Context) {
 	usecase := usecases.NewDeleteCommentUsecase(h.CommentRepository)
 	controllers.DeleteComment(ctx, usecase)
+}
+
+func (h *Handler) GetIntention(ctx *gin.Context) {
+	usecase := usecases.NewGetIntentionUsecase(h.IntentionRepository, h.UserRepository)
+	controllers.GetIntention(ctx, usecase)
+}
+
+func (h *Handler) PostIntention(ctx *gin.Context) {
+	usecase := usecases.NewCreateIntentionUsecase(h.IntentionRepository, h.UserRepository)
+	controllers.PostIntention(ctx, usecase)
 }
