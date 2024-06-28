@@ -113,7 +113,6 @@ func PostSignup(ctx *gin.Context, postSignup *usecases.PostSignupUsecase, postSi
 		handleError(ctx, http.StatusBadRequest, err)
 		return
 	}
-	user.Password = ""
 
 	user, tokenString, err := postSignin.Execute(username, password)
 	if err != nil {
