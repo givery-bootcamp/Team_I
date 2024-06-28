@@ -33,12 +33,13 @@ func TestExecute(t *testing.T) {
 	userId := 1
 	title := "test_title"
 	body := "test_body"
+	postType := ""
 
 	db := SetupDB()
 
 	r := repositories.NewPostRepository(db)
 	usecase := NewCreatePostUsecase(r)
-	result, err := usecase.Execute(userId, title, body)
+	result, err := usecase.Execute(userId, title, body, postType)
 	if err != nil {
 		t.Fail()
 	}
