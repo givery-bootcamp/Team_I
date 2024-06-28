@@ -59,13 +59,19 @@ func (r *IntentionRepository) Create(userId int, postId int, status string) (*en
 	}, nil
 }
 
-func (r *IntentionRepository) Exists(userId int, postId int) (bool, error) {
+func (r *IntentionRepository) Exists(userId int, postId int) (string, error) {
 	var intention []Intention
 	if err := r.Conn.Table("intentions").Where("post_id = ? and user_id = ?", postId, userId).
 		Scan(&intention).Error; err != nil {
-		return false, err
+		return "", err
 	}
-	return len(intention) > 0, nil
+	if len(intention) == 0 {
+		return "", nil
+	}
+	if intention[0].Status != "attend" && intention[0].Status != "skip" {
+		return "", fmt.Errorf("invalid status")
+	}
+	return intention[0].Status, nil
 }
 
 func (r *IntentionRepository) Delete(userId int, postId int) error {

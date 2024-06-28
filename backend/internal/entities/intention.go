@@ -2,7 +2,7 @@ package entities
 
 type IntentionRepository interface {
 	Create(userId int, postId int, state string) (*IntentionForInsert, error)
-	Exists(userId int, postId int) (bool, error)
+	Exists(userId int, postId int) (string, error)
 	Delete(userId int, postId int) error
 	GetUsersByPostIdAndStatus(postId int, status string) ([]*User, error)
 }
