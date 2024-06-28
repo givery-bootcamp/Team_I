@@ -3,14 +3,13 @@ package usecases
 import (
 	"fmt"
 	"myapp/internal/entities"
-	"myapp/internal/repositories"
 )
 
 type UpdatePostUsecase struct {
 	repository entities.PostRepository
 }
 
-func NewUpdatePostUsecase(r *repositories.PostRepository) *UpdatePostUsecase {
+func NewUpdatePostUsecase(r entities.PostRepository) *UpdatePostUsecase {
 	return &UpdatePostUsecase{
 		repository: r,
 	}

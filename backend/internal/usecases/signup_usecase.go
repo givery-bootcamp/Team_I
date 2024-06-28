@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"myapp/internal/entities"
-	"myapp/internal/repositories"
 	"regexp"
 
 	"golang.org/x/crypto/bcrypt"
@@ -14,7 +13,7 @@ type PostSignupUsecase struct {
 	repository entities.UserRepository
 }
 
-func NewPostSignupUsecase(r *repositories.UserRepository) *PostSignupUsecase {
+func NewPostSignupUsecase(r entities.UserRepository) *PostSignupUsecase {
 	return &PostSignupUsecase{
 		repository: r,
 	}

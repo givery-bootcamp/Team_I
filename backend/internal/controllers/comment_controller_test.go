@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"database/sql/driver"
 	"encoding/json"
+	"myapp/internal/config"
 	"myapp/internal/controllers"
 	"myapp/internal/entities"
 	"myapp/internal/middleware"
@@ -94,7 +95,7 @@ func TestPostCommentController(t *testing.T) {
 	}
 	req, _ := http.NewRequest("POST", "/comments", bytes.NewBuffer(jsonBytes))
 	req.Header.Set("Content-Type", "application/json")
-	tokenString := getTestUserJwtStr(user_id, user_name, middleware.SECRET_KEY)
+	tokenString := getTestUserJwtStr(user_id, user_name, config.SecretKey)
 	req.AddCookie(&http.Cookie{Name: "jwt", Value: tokenString})
 
 	r.ServeHTTP(w, req)

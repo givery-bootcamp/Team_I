@@ -41,6 +41,10 @@ const apiRequest = async <T = undefined>(url: string, method = 'GET', options?: 
         throw new Error(errorText);
     }
 
+    if (response.status === 204) {
+        return;
+    }
+    
     if (response.headers.get('content-type')?.includes('application/json')) {
         return response.json();
     } else {
@@ -51,6 +55,7 @@ const apiRequest = async <T = undefined>(url: string, method = 'GET', options?: 
 type FetchPostsOptions = {
     page?: number;
     limit?: number;
+    type?: 'official' | 'yamada';
 }
 
 export const fetchPosts = (options: FetchPostsOptions = {}): Promise<Post[]> => {
@@ -62,6 +67,9 @@ export const fetchPosts = (options: FetchPostsOptions = {}): Promise<Post[]> => 
     }
     if (options.limit != null) {
         params.append('limit', String(options.limit));
+    }
+    if (options.type != null) {
+        params.append('type', options.type);
     }
     if (params.toString()) {
         url += `?${params.toString()}`;

@@ -13,13 +13,18 @@ import (
 func GetPosts(ctx *gin.Context, usecase *usecases.ListPostUsecase) {
 	page, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(ctx.DefaultQuery("limit", "50"))
-	result, err := usecase.Execute(page, limit)
+	postType := ctx.DefaultQuery("type", "")
+	result, err := usecase.Execute(page, limit, postType)
 	if err != nil {
-		handleError(ctx, http.StatusInternalServerError, err)
-	} else if result != nil {
-		ctx.JSON(http.StatusOK, result)
+		if errors.Is(err, usecases.ErrInvalidPostType) {
+			handleError(ctx, http.StatusBadRequest, err)
+		} else {
+			handleError(ctx, http.StatusInternalServerError, err)
+		}
+	} else if result == nil {
+		ctx.JSON(http.StatusOK, []string{})
 	} else {
-		handleError(ctx, http.StatusNotFound, errors.New("not found"))
+		ctx.JSON(http.StatusOK, result)
 	}
 }
 
@@ -84,6 +89,7 @@ func DeletePost(ctx *gin.Context, usecase *usecases.DeletePostUsecase) {
 type PostRequest struct {
 	Title   string `json:"title"`
 	Content string `json:"content"`
+	Type    string `json:"meetingType"`
 }
 
 var ErrUserInfoNotFound = fmt.Errorf("user info not found")
@@ -102,7 +108,8 @@ func PostPost(ctx *gin.Context, usecase *usecases.CreatePostUsecase) {
 	}
 	userInfo := userInfoAny.(map[string]any)
 	userId := userInfo["Id"].(int)
-	result, err := usecase.Execute(userId, post.Title, post.Content)
+	fmt.Println("post.Type: ", post.Type)
+	result, err := usecase.Execute(userId, post.Title, post.Content, post.Type)
 	if err != nil {
 		handleError(ctx, http.StatusBadRequest, err)
 		return

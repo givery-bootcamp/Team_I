@@ -4,20 +4,28 @@ import {Link} from 'react-router-dom';
 import {fetchPosts} from '../../shared/services/apiService';
 
 
-const PostList: React.FC = () => {
+type FetchPostsOptions = {
+    page?: number;
+    limit?: number;
+    type?: 'official' | 'yamada';
+}
+
+
+type PostListProps = Partial<FetchPostsOptions>;
+
+const PostList: React.FC<PostListProps> = ({ type }) => {
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const POSTS_PER_PAGE = 7; // 1ページでみやすい上限の数が7くらい
+    const POSTS_PER_PAGE = 7;
     const [page, setPage] = useState<number>(1);
-
 
     useEffect(() => {
         const getPosts = async () => {
             try {
                 setLoading(true);
-                const data = await fetchPosts({ page, limit: POSTS_PER_PAGE });
+                const data = await fetchPosts({ type, page, limit: POSTS_PER_PAGE });
                 setPosts(data);
             } catch (err) {
                 setError('An unexpected error occurred');
@@ -27,7 +35,7 @@ const PostList: React.FC = () => {
         };
 
         getPosts();
-    }, [page]);
+    }, [type, page]);
 
     if (loading) {
         return <div className="flex justify-center items-center h-full"><span className="text-lg font-semibold">Loading...</span></div>;

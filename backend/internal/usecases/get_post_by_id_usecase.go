@@ -2,37 +2,14 @@ package usecases
 
 import (
 	"myapp/internal/entities"
-	"myapp/internal/repositories"
 )
-
-type ListPostUsecase struct {
-	repository entities.PostRepository
-}
-
-func NewListPostUsecase(r *repositories.PostRepository) *ListPostUsecase {
-	return &ListPostUsecase{
-		repository: r,
-	}
-}
-
-func (u *ListPostUsecase) Execute(page int, limit int) ([]*entities.Post, error) {
-	if page <= 0 {
-		page = 1
-	}
-
-	if limit <= 0 {
-		limit = 50
-	}
-
-	return u.repository.List(page, limit)
-}
 
 type GetPostByIdUsecase struct {
 	postRepository    entities.PostRepository
 	commentRepository entities.CommentRepository
 }
 
-func NewGetPostByIdUsecase(postRepository *repositories.PostRepository, commentRepository *repositories.CommentRepository) *GetPostByIdUsecase {
+func NewGetPostByIdUsecase(postRepository entities.PostRepository, commentRepository entities.CommentRepository) *GetPostByIdUsecase {
 	return &GetPostByIdUsecase{
 		postRepository:    postRepository,
 		commentRepository: commentRepository,
