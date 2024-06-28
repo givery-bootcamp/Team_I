@@ -90,3 +90,7 @@ export const signUp = (data: { name: string; password: string }): Promise<any> =
 export const getUser = (): Promise<any> => apiRequest(`${API_BASE_URL}/user`);
 
 export const createComment = (data: CommentIFormInput): Promise<any> => apiRequest(`${API_BASE_URL}/comments`, 'POST', {data});
+
+export const deleteComment = (comment_id: number): Promise<void> => apiRequest(`${API_BASE_URL}/comments/${comment_id}`, 'DELETE');
+
+export const updateComment = (data: CommentIFormInput, comment_id: number): Promise<any> => apiRequest(`${API_BASE_URL}/comments/${comment_id}`, 'PUT', {data});
