@@ -123,6 +123,7 @@ func PostSignup(ctx *gin.Context, postSignup *usecases.PostSignupUsecase, postSi
 		}
 		return
 	}
+	user.Password = ""
 
 	ctx.SetSameSite(http.SameSiteStrictMode)
 	// ヘッダーにトークンをセット
