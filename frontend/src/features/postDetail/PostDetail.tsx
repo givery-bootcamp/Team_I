@@ -286,77 +286,90 @@ const PostDetail: React.FC = () => {
 
     return (
         <div className="p-6 bg-white shadow-lg rounded-lg relative">
-            <div>
-            <button onClick={() => navigate("/new-post")}
-                    className="text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded absolute top-0 right-0 m-4">新しい投稿を作成
-            </button>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">{post.title}</h2>
-            <p className="text-gray-600">ユーザー名: <span className="font-semibold">{post.username}</span></p>
-            <p className="text-gray-500">更新日: {post.updated_at}</p>
-            <p className="text-gray-500 mt-4">{post.body}</p>
+            <div className="p-6 bg-white shadow-lg rounded-lg relative">
+                <button onClick={() => navigate("/new-post")}
+                        className="text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded absolute top-0 right-0 m-4">新しい投稿を作成
+                </button>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">{post.title}</h2>
+                <p className="text-gray-600">ユーザー名: <span className="font-semibold">{post.username}</span></p>
+                <p className="text-gray-500">更新日: {post.updated_at}</p>
+                <p className="text-gray-500 mt-4">{post.body}</p>
 
-            {userId === post.user_id && (
-                <div className="mt-4">
-                    <Link to={`/posts/${post.id}/edit`} className="text-blue-500 mr-4">編集</Link>
-                    <button onClick={handleDelete} className="text-red-500">削除</button>
+                {userId === post.user_id && (
+                    <div className="mt-4">
+                        <Link to={`/posts/${post.id}/edit`} className="text-blue-500 mr-4">編集</Link>
+                        <button onClick={handleDelete} className="text-red-500">削除</button>
+                    </div>
+                )}
+
+                {error && <div className="text-red-500 mt-4">{error}</div>}
+
+                {post.type === 'official' || 'yamada' && (
+                    <div className="mt-4">
+                        <button
+                            onClick={() => handleIntention('attend')}
+                            disabled={loading}
+                            className={
+                            `flex-1 mr-2 py-2 px-4 rounded bg-blue-500 hover:bg-blue-600 text-white font-semibold
+                            ${intention === 'attend' ? 'opacity-100' : 'opacity-50'}`}
+                        >
+                            参加
+                        </button>
+                        <button
+                            onClick={() => handleIntention('skip')}
+                            disabled={loading}
+                            className={
+                            `flex-1 ml-2 py-2 px-4 rounded bg-red-500 hover:bg-red-600 text-white font-semibold
+                            ${intention === 'skip' ? 'opacity-100' : 'opacity-50'}`}
+                        >
+                            不参加
+                        </button>
+                    </div>
+                )}
+
+
+                <div className="flex gap-8">
+                    <div
+                        onMouseEnter={() => setIsHoveringAttendees(true)}
+                        onMouseLeave={() => setIsHoveringAttendees(false)}
+                    >
+                        <h3 className="inline-block py-1 px-2 text-sm rounded-full bg-blue-500 text-white my-2">Attendees</h3>
+                        {isHoveringAttendees && attendees.map(name => (
+                            <p key={name}>{name}</p>
+                        ))}
+                    </div>
+                    <div
+                        onMouseEnter={() => setIsHoveringNonAttendees(true)}
+                        onMouseLeave={() => setIsHoveringNonAttendees(false)}
+                    >
+                        <h3 className="inline-block py-1 px-2 text-sm rounded-full bg-blue-500 text-white my-2">Non
+                            Attendees</h3>
+                        {isHoveringNonAttendees && nonAttendees.map(name => (
+                            <p key={name}>{name}</p>
+                        ))}
+                    </div>
                 </div>
-            )}
 
-            {error && <div className="text-red-500 mt-4">{error}</div>}
+                <Link to="/" className="text-blue-500 mt-4 block">ホームに戻る</Link>
 
-            {post.tag === 'FanMeeting' && (
-                <div className="mt-4">
-                    <button
-                        onClick={() => handleIntention('attend')}
-                        disabled={loading}
-                        className={intention === 'attend' ? 'button-attend' : ''}>
-                        Attend
-                    </button>
-                    <button
-                        onClick={() => handleIntention('skip')}
-                        disabled={loading}
-                        className={intention === 'skip' ? 'button-attend' : ''}>
-                        Not Attend
-                    </button>
-                </div>
-            )}
+                <ConfirmModal message={confirmMessage}
+                              modalRef={modalRef}
+                              onConfirm={onConfirm}
+                              onCancel={onCancel}></ConfirmModal>
 
-            <div
-                onMouseEnter={() => setIsHoveringAttendees(true)}
-                onMouseLeave={() => setIsHoveringAttendees(false)}
-            >
-                <h3>Attendees</h3>
-                {isHoveringAttendees && attendees.map(name => (
-                    <p key={name}>{name}</p>
-                ))}
-            </div>
-            <div
-                onMouseEnter={() => setIsHoveringNonAttendees(true)}
-                onMouseLeave={() => setIsHoveringNonAttendees(false)}
-            >
-                <h3>Non Attendees</h3>
-                {isHoveringNonAttendees && nonAttendees.map(name => (
-                    <p key={name}>{name}</p>
-                ))}
-            </div>
-
-            <Link to="/" className="text-blue-500 mt-4 block">ホームに戻る</Link>
-
-            <ConfirmModal message={confirmMessage}
-                          modalRef={modalRef}
-                          onConfirm={onConfirm}
-                          onCancel={onCancel}></ConfirmModal>
             </div>
             {/* コメントのidがuserのidと一致するときに編集ボタンを表示 */}
             {post.comments?.length > 0 && post.comments.map(comment => {
                 return (
-                    <CommentCard key={comment.id} comment={comment} userId={userId} setError={setError} customConfirm={customConfirm} />
+                    <CommentCard key={comment.id} comment={comment} userId={userId} setError={setError}
+                                 customConfirm={customConfirm}/>
                 );
-                })
+            })
             }
 
+
             {isAddComment ?
-            <div className="p-4 mt-2 bg-white shadow-lg rounded-lg">
+                <div className="p-4 mt-2 bg-white shadow-lg rounded-lg">
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="mb-4">
                         <label className="block text-gray-600 mb-2">コメント</label>
