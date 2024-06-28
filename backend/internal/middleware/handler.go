@@ -47,8 +47,9 @@ func (h *Handler) PutPostById(ctx *gin.Context) {
 }
 
 func (h *Handler) PostSignup(ctx *gin.Context) {
-	usecase := usecases.NewPostSignupUsecase(h.UserRepository)
-	controllers.PostSignup(ctx, usecase)
+	signupUsecase := usecases.NewPostSignupUsecase(h.UserRepository)
+	signinUsecase := usecases.NewPostSigninUsecase(h.UserRepository)
+	controllers.PostSignup(ctx, signupUsecase, signinUsecase)
 }
 
 func (h *Handler) PostSignin(ctx *gin.Context) {

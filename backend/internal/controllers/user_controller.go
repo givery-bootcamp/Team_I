@@ -36,6 +36,7 @@ func PostSignin(ctx *gin.Context, usecase *usecases.PostSigninUsecase) {
 		}
 		return
 	}
+	user.Password = ""
 
 	ctx.SetSameSite(http.SameSiteStrictMode)
 	// ヘッダーにトークンをセット
@@ -87,11 +88,12 @@ func GetUser(ctx *gin.Context, usecase *usecases.GetUserUsecase) {
 		}
 		return
 	}
+	user.Password = ""
 
 	ctx.JSON(http.StatusOK, user)
 }
 
-func PostSignup(ctx *gin.Context, usecase *usecases.PostSignupUsecase) {
+func PostSignup(ctx *gin.Context, postSignup *usecases.PostSignupUsecase, postSignin *usecases.PostSigninUsecase) {
 
 	var json JsonRequestUser
 	if err := ctx.ShouldBindJSON(&json); err != nil {
@@ -101,7 +103,7 @@ func PostSignup(ctx *gin.Context, usecase *usecases.PostSignupUsecase) {
 	}
 
 	username, password := json.Name, json.Password
-	user, err := usecase.Execute(username, password)
+	_, err := postSignup.Execute(username, password)
 	if err != nil {
 		if err == usecases.ErrUnexpected {
 			log.Printf("Unexpected error in PostSignup: %v", err)
@@ -112,6 +114,22 @@ func PostSignup(ctx *gin.Context, usecase *usecases.PostSignupUsecase) {
 		return
 	}
 
+	user, tokenString, err := postSignin.Execute(username, password)
+	if err != nil {
+		if err == usecases.ErrUserNotFound || err == usecases.ErrPasswordIncorrect {
+			log.Printf("Error in user authentication: %v", err)
+			handleError(ctx, http.StatusUnauthorized, err)
+		} else {
+			log.Printf("Unexpected error in PostSignin: %v", err)
+			handleError(ctx, http.StatusInternalServerError, err)
+		}
+		return
+	}
+	user.Password = ""
+
+	ctx.SetSameSite(http.SameSiteStrictMode)
+	// ヘッダーにトークンをセット
+	ctx.SetCookie("jwt", tokenString, 3600, "/", "", false, true)
 	ctx.JSON(http.StatusOK, user)
 
 }

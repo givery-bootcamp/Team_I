@@ -1,9 +1,12 @@
+import { Comment } from "./Comment";
+
 export interface Post {
     id: number;
     title: string;
     body: string;
     user_id: number;
     username: string;
+    comments: Comment[];
     tag: string;
     type: string;
     created_at: string;

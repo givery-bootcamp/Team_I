@@ -5,7 +5,7 @@ import (
 )
 
 type ErrorResponse struct {
-	Message string "json:`message`"
+	Message string `json:"message"`
 }
 
 func handleError(ctx *gin.Context, status int, err error) {
