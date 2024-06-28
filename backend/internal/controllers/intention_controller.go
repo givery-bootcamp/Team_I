@@ -21,7 +21,7 @@ func GetIntention(ctx *gin.Context, usecase *usecases.GetIntentionUsecase) {
 		return
 	}
 
-	status := ctx.DefaultQuery("status", "")
+	status := ctx.DefaultQuery("state", "")
 	if status == "" {
 		ctx.String(http.StatusBadRequest, "Status is required")
 		return
