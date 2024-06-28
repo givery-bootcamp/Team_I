@@ -3,14 +3,13 @@ package usecases
 import (
 	"errors"
 	"myapp/internal/entities"
-	"myapp/internal/repositories"
 )
 
 type DeletePostUsecase struct {
 	repository entities.PostRepository
 }
 
-func NewDeletePostUsecase(r *repositories.PostRepository) *DeletePostUsecase {
+func NewDeletePostUsecase(r entities.PostRepository) *DeletePostUsecase {
 	return &DeletePostUsecase{
 		repository: r,
 	}

@@ -2,14 +2,13 @@ package usecases
 
 import (
 	"myapp/internal/entities"
-	"myapp/internal/repositories"
 )
 
 type ListPostUsecase struct {
 	repository entities.PostRepository
 }
 
-func NewListPostUsecase(r *repositories.PostRepository) *ListPostUsecase {
+func NewListPostUsecase(r entities.PostRepository) *ListPostUsecase {
 	return &ListPostUsecase{
 		repository: r,
 	}
@@ -32,7 +31,7 @@ type GetPostByIdUsecase struct {
 	commentRepository entities.CommentRepository
 }
 
-func NewGetPostByIdUsecase(postRepository *repositories.PostRepository, commentRepository *repositories.CommentRepository) *GetPostByIdUsecase {
+func NewGetPostByIdUsecase(postRepository entities.PostRepository, commentRepository entities.CommentRepository) *GetPostByIdUsecase {
 	return &GetPostByIdUsecase{
 		postRepository:    postRepository,
 		commentRepository: commentRepository,

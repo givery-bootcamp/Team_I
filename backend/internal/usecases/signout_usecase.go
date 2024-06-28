@@ -3,7 +3,6 @@ package usecases
 import (
 	"myapp/internal/config"
 	"myapp/internal/entities"
-	"myapp/internal/repositories"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -13,7 +12,7 @@ type PostSignoutUsecase struct {
 	repository entities.UserRepository
 }
 
-func NewPostSignoutUsecase(r *repositories.UserRepository) *PostSignoutUsecase {
+func NewPostSignoutUsecase(r entities.UserRepository) *PostSignoutUsecase {
 	return &PostSignoutUsecase{
 		repository: r,
 	}

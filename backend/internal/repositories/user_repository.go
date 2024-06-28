@@ -7,7 +7,21 @@ import (
 	"gorm.io/gorm"
 )
 
-var ErrUserNotFound = fmt.Errorf("user not found")
+var ErrUserNotFound = &ErrUserRepository{
+	errorMsg: "user not found",
+}
+
+type ErrUserRepository struct {
+	errorMsg string
+}
+
+func (e *ErrUserRepository) Error() string {
+	return e.errorMsg
+}
+
+func (e *ErrUserRepository) SigninError() string {
+	return e.errorMsg
+}
 
 type UserRepository struct {
 	Conn *gorm.DB

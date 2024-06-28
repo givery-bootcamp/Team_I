@@ -2,14 +2,13 @@ package usecases
 
 import (
 	"myapp/internal/entities"
-	"myapp/internal/repositories"
 )
 
 type CreatePostUsecase struct {
 	repository entities.PostRepository
 }
 
-func NewCreatePostUsecase(r *repositories.PostRepository) *CreatePostUsecase {
+func NewCreatePostUsecase(r entities.PostRepository) *CreatePostUsecase {
 	return &CreatePostUsecase{
 		repository: r,
 	}
