@@ -15,7 +15,7 @@ func NewCreatePostUsecase(r entities.PostRepository) *CreatePostUsecase {
 }
 
 func (u *CreatePostUsecase) Execute(userId int, title, body, postType string) (*entities.PostForInsert, error) {
-	if postType != "" && postType != "Official" && postType != "Yamada" {
+	if postType != "" && postType != "official" && postType != "yamada" {
 		return nil, ErrInvalidPostType
 	}
 	return u.repository.Create(userId, title, body, postType)
