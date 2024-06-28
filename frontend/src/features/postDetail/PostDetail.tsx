@@ -184,12 +184,16 @@ const PostDetail: React.FC = () => {
         // Load attendees
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         fetchIntentionState(parseInt(postId!, 10), 'attend')
-            .then(data => setAttendees(data.usernames)); // Adjust as per your API response
+            .then(data => {
+                if(!!data.usernames) setAttendees(data.usernames)
+            }); // Adjust as per your API response
 
         // Load non-attendees
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         fetchIntentionState(parseInt(postId!, 10), 'skip')
-            .then(data => setNonAttendees(data.usernames)); // Adjust as per your API response
+            .then(data => {
+                if(!!data.usernames) setNonAttendees(data.usernames)
+            }); // Adjust as per your API response
     }, [postId]);
 
     const handleIntention = (intention: IntentionState) => {
