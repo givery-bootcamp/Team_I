@@ -13,11 +13,9 @@ import (
 
 const errPasswordIncorrectMessage = "password is incorrect"
 const ErrUserNotFoundMessage = "user not found"
-const errUnknownMessage = "unknown error"
 
 var ErrPasswordIncorrect = fmt.Errorf(errPasswordIncorrectMessage)
 var ErrUserNotFound = fmt.Errorf(ErrUserNotFoundMessage)
-var ErrUnknown = fmt.Errorf(errUnknownMessage)
 
 type ErrSigninUsecase interface {
 	SigninError() string
