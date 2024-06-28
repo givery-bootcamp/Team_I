@@ -32,13 +32,14 @@ type PostForInsert struct {
 	UpdatedAt time.Time `gorm:"autoUpdateTime"`
 }
 
-func NewPost(id int, title, body string, userId int, username, createdAt, updatedAt string) *Post {
+func NewPost(id int, title, body string, userId int, username, typ, createdAt, updatedAt string) *Post {
 	return &Post{
 		Id:        id,
 		Title:     title,
 		Body:      body,
 		UserId:    userId,
 		Username:  username,
+		Type:      typ,
 		CreatedAt: createdAt,
 		UpdatedAt: updatedAt,
 	}
