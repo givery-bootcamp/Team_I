@@ -4,28 +4,6 @@ import (
 	"myapp/internal/entities"
 )
 
-type ListPostUsecase struct {
-	repository entities.PostRepository
-}
-
-func NewListPostUsecase(r entities.PostRepository) *ListPostUsecase {
-	return &ListPostUsecase{
-		repository: r,
-	}
-}
-
-func (u *ListPostUsecase) Execute(page int, limit int) ([]*entities.Post, error) {
-	if page <= 0 {
-		page = 1
-	}
-
-	if limit <= 0 {
-		limit = 50
-	}
-
-	return u.repository.List(page, limit)
-}
-
 type GetPostByIdUsecase struct {
 	postRepository    entities.PostRepository
 	commentRepository entities.CommentRepository

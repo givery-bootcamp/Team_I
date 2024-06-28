@@ -29,7 +29,7 @@ func NewPostRepository(conn *gorm.DB) *PostRepository {
 	}
 }
 
-func (r *PostRepository) List(page int, limit int) ([]*entities.Post, error) {
+func (r *PostRepository) List(page int, limit int, postType string) ([]*entities.Post, error) {
 	var posts []Post
 
 	if page <= 0 {
@@ -42,15 +42,28 @@ func (r *PostRepository) List(page int, limit int) ([]*entities.Post, error) {
 
 	offset := (page - 1) * limit
 
-	if err := r.Conn.Table("posts").
-		Select("posts.id, users.name as username, posts.user_id, posts.title, posts.body, posts.created_at, posts.updated_at").
-		Where("posts.deleted_at IS NULL").
-		Joins("JOIN users ON posts.user_id = users.id").
-		Order("posts.id DESC").
-		Offset(offset).
-		Limit(limit).
-		Scan(&posts).Error; err != nil {
-		return nil, err
+	if postType == "" {
+		if err := r.Conn.Table("posts").
+			Select("posts.id, users.name as username, posts.user_id, posts.title, posts.body, posts.created_at, posts.updated_at").
+			Where("posts.deleted_at IS NULL").
+			Joins("JOIN users ON posts.user_id = users.id").
+			Order("posts.id DESC").
+			Offset(offset).
+			Limit(limit).
+			Scan(&posts).Error; err != nil {
+			return nil, err
+		}
+	} else {
+		if err := r.Conn.Table("posts").
+			Select("posts.id, users.name as username, posts.user_id, posts.title, posts.body, posts.created_at, posts.updated_at").
+			Where("posts.deleted_at IS NULL and posts.type = ?", postType).
+			Joins("JOIN users ON posts.user_id = users.id").
+			Order("posts.id DESC").
+			Offset(offset).
+			Limit(limit).
+			Scan(&posts).Error; err != nil {
+			return nil, err
+		}
 	}
 
 	return convertPostRepositoryModelToEntity(posts), nil
@@ -82,11 +95,12 @@ func convertPostRepositoryModelToEntity(v []Post) []*entities.Post {
 	return posts
 }
 
-func (r *PostRepository) Create(userId int, title, body string) (*entities.PostForInsert, error) {
+func (r *PostRepository) Create(userId int, title, body, postType string) (*entities.PostForInsert, error) {
 	post := entities.PostForInsert{
 		Title:  title,
 		Body:   body,
 		UserId: userId,
+		Type:   postType,
 	}
 	if err := r.Conn.Table("posts").Create(&post).Error; err != nil {
 		return nil, err
