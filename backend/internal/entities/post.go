@@ -1,5 +1,7 @@
 package entities
 
+import "time"
+
 type PostRepository interface {
 	List(page int, limit int, postType string) ([]*Post, error)
 	GetPostById(id int) (*Post, error)
@@ -16,16 +18,18 @@ type Post struct {
 	UserId    int        `json:"user_id"`
 	Username  string     `json:"username"`
 	Comments  []*Comment `json:"comments,omitempty"`
-	CreatedAt string     `json:"created_at"`
-	UpdatedAt string     `json:"updated_at"`
+	CreatedAt string     `json:"created_at" gorm:"-"`
+	UpdatedAt string     `json:"updated_at" gorm:"-"`
 }
 
 type PostForInsert struct {
-	Id     int    `json:"id"`
-	UserId int    `json:"user_id"`
-	Title  string `json:"title"`
-	Body   string `json:"body"`
-	Type   string `json:"type"`
+	Id        int       `json:"id"`
+	UserId    int       `json:"user_id"`
+	Title     string    `json:"title"`
+	Body      string    `json:"body"`
+	Type      string    `json:"type"`
+	CreatedAt time.Time `gorm:"autoCreateTime"`
+	UpdatedAt time.Time `gorm:"autoUpdateTime"`
 }
 
 func NewPost(id int, title, body string, userId int, username, createdAt, updatedAt string) *Post {
