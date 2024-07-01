@@ -3,7 +3,7 @@ import React from "react";
 
 const OfficialMeeting: React.FC = () => {
     return (
-        <PostList type="official" />
+        <PostList type="Official" />
     );
 };
 

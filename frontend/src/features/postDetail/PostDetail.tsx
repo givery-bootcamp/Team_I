@@ -147,7 +147,6 @@ const PostDetail: React.FC = () => {
 
     const {showAlert} = useAlert();
 
-    const [intention, setIntention] = useState<IntentionState | null>(null);
     const [attendees, setAttendees] = useState<string[]>([]);
     const [nonAttendees, setNonAttendees] = useState<string[]>([]);
 
@@ -184,12 +183,25 @@ const PostDetail: React.FC = () => {
         // Load attendees
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         fetchIntentionState(parseInt(postId!, 10), 'attend')
-            .then(data => setAttendees(data.usernames)); // Adjust as per your API response
+            .then(data => {
+                console.log(data);
+                if(!!data) {
+                    const dataArray = data as any[];
+                    const arr = dataArray.map((item) => item.name);
+                    setAttendees(arr)
+                }
+            }); // Adjust as per your API response
 
         // Load non-attendees
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         fetchIntentionState(parseInt(postId!, 10), 'skip')
-            .then(data => setNonAttendees(data.usernames)); // Adjust as per your API response
+            .then(data => {
+                if(!!data) {
+                    const dataArray = data as any[];
+                    const arr = dataArray.map((item) => item.name);
+                    setNonAttendees(arr)
+                }
+            }); // Adjust as per your API response
     }, [postId]);
 
     const handleIntention = (intention: IntentionState) => {
@@ -198,12 +210,22 @@ const PostDetail: React.FC = () => {
             return;
         }
 
+        const addOrErase = (arr: string[], setArr: React.Dispatch<React.SetStateAction<string[]>>, other: string[],setOther: React.Dispatch<React.SetStateAction<string[]>>, name: string) => {
+            if (other.includes(name)) {
+                setOther(other.filter(item => item !== name));
+            }
+            if (arr.includes(name)) {
+                setArr(arr.filter(item => item !== name));
+            } else {
+                setArr([...arr, name]);
+            }
+        }
+
         postIntention(post.id, intention, userId)
             .then(() => {
-                setIntention(intention);
                 intention === 'attend' ?
-                    setAttendees(prev => [...prev, user?.name]) :
-                    setNonAttendees(prev => [...prev, user?.name]);
+                    addOrErase(attendees, setAttendees, nonAttendees, setNonAttendees, user?.name):
+                    addOrErase(nonAttendees, setNonAttendees, attendees, setAttendees, user?.name);
             })
             .catch((error) => {
                 console.error(error);
@@ -304,14 +326,14 @@ const PostDetail: React.FC = () => {
 
                 {error && <div className="text-red-500 mt-4">{error}</div>}
 
-                {(post.type === 'official' || post.type === 'yamada') && (
+                {(post.type === 'Official' || post.type === 'Yamada') && (
                     <>
                         <div className="mt-4">
                             <button
                                 onClick={() => handleIntention('attend')}
                                 disabled={loading}
                                 className={`flex-1 mr-2 py-2 px-4 rounded bg-blue-500 hover:bg-blue-600 text-white font-semibold
-                            ${intention === 'attend' ? 'opacity-100' : 'opacity-50'}`}
+                            ${user && attendees.includes(user?.name) ? 'opacity-100' : 'opacity-50'}`}
                             >
                                 参加
                             </button>
@@ -319,7 +341,7 @@ const PostDetail: React.FC = () => {
                                 onClick={() => handleIntention('skip')}
                                 disabled={loading}
                                 className={`flex-1 ml-2 py-2 px-4 rounded bg-red-500 hover:bg-red-600 text-white font-semibold
-                            ${intention === 'skip' ? 'opacity-100' : 'opacity-50'}`}
+                            ${user && nonAttendees.includes(user?.name) ? 'opacity-100' : 'opacity-50'}`}
                             >
                                 不参加
                             </button>

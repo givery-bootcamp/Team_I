@@ -11,6 +11,12 @@ var ErrUserNotFound = &ErrUserRepository{
 	errorMsg: "user not found",
 }
 
+var ErrDuplicateUser = &ErrUserRepository{
+	errorMsg: "duplicate user",
+}
+
+var ErrOnCreate = fmt.Errorf("repository error on create")
+
 type ErrUserRepository struct {
 	errorMsg string
 }
@@ -19,7 +25,7 @@ func (e *ErrUserRepository) Error() string {
 	return e.errorMsg
 }
 
-func (e *ErrUserRepository) SigninError() string {
+func (e *ErrUserRepository) UserError() string {
 	return e.errorMsg
 }
 
@@ -44,10 +50,14 @@ func NewUserRepository(conn *gorm.DB) *UserRepository {
 }
 
 func (r *UserRepository) GetUserById(id int) (*entities.User, error) {
-	var user User
-	if err := r.Conn.Table("users").Select("id, name, password, created_at, updated_at").Where("id = ?", id).First(&user).Error; err != nil {
+	var users []User
+	if err := r.Conn.Table("users").Select("id, name, password, created_at, updated_at").Where("id = ?", id).Scan(&users).Error; err != nil {
 		return nil, err
 	}
+	if len(users) == 0 {
+		return nil, ErrUserNotFound
+	}
+	user := users[0]
 	return entities.NewUser(user.Id, user.Name, user.Password, user.CreatedAt, user.UpdatedAt), nil
 }
 
@@ -60,9 +70,8 @@ func (r *UserRepository) GetUserByName(name string) (*entities.User, error) {
 		return nil, ErrUserNotFound
 	}
 	if len(result) > 1 {
-		return nil, fmt.Errorf("duplicate user")
+		return nil, ErrDuplicateUser
 	}
-	// len(result) == 1
 	user := result[0]
 	return entities.NewUser(user.Id, user.Name, user.Password, user.CreatedAt, user.UpdatedAt), nil
 }
@@ -77,8 +86,6 @@ func (r *UserRepository) UserExists(name string) (bool, error) {
 	}
 	return true, nil
 }
-
-var ErrOnCreate = fmt.Errorf("repository error on create")
 
 func (r *UserRepository) Create(name, hashedPassword string) (*entities.User, error) {
 	user := entities.User{

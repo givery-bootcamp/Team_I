@@ -57,7 +57,7 @@ const apiRequest = async <T = undefined>(url: string, method = 'GET', options?: 
 type FetchPostsOptions = {
     page?: number;
     limit?: number;
-    type?: 'official' | 'yamada';
+    type?: 'Official' | 'Yamada';
 }
 
 export const fetchPosts = (options: FetchPostsOptions = {}): Promise<Post[]> => {

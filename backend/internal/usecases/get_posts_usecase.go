@@ -26,7 +26,7 @@ func (u *ListPostUsecase) Execute(page int, limit int, postType string) ([]*enti
 	if limit <= 0 {
 		limit = 50
 	}
-	if postType != "" && postType != "official" && postType != "yamada" {
+	if postType != "" && postType != "Official" && postType != "Yamada" {
 		return nil, ErrInvalidPostType
 	}
 

@@ -19,6 +19,7 @@ type Post struct {
 	Body      string
 	UserId    int
 	Username  string
+	Type      string
 	CreatedAt string
 	UpdatedAt string
 }
@@ -44,7 +45,7 @@ func (r *PostRepository) List(page int, limit int, postType string) ([]*entities
 
 	if postType == "" {
 		if err := r.Conn.Table("posts").
-			Select("posts.id, users.name as username, posts.user_id, posts.title, posts.body, posts.created_at, posts.updated_at").
+			Select("posts.id, users.name as username, posts.user_id, posts.title, posts.body, posts.type, posts.created_at, posts.updated_at").
 			Where("posts.deleted_at IS NULL").
 			Joins("JOIN users ON posts.user_id = users.id").
 			Order("posts.id DESC").
@@ -55,7 +56,7 @@ func (r *PostRepository) List(page int, limit int, postType string) ([]*entities
 		}
 	} else {
 		if err := r.Conn.Table("posts").
-			Select("posts.id, users.name as username, posts.user_id, posts.title, posts.body, posts.created_at, posts.updated_at").
+			Select("posts.id, users.name as username, posts.user_id, posts.title, posts.body, posts.type, posts.created_at, posts.updated_at").
 			Where("posts.deleted_at IS NULL and posts.type = ?", postType).
 			Joins("JOIN users ON posts.user_id = users.id").
 			Order("posts.id DESC").
@@ -71,11 +72,11 @@ func (r *PostRepository) List(page int, limit int, postType string) ([]*entities
 
 func (r *PostRepository) GetPostById(id int) (*entities.Post, error) {
 	var post Post
-	if err := r.Conn.Table("posts").Select("posts.id, users.name as username, posts.user_id, posts.title, posts.body, posts.created_at, posts.updated_at").Joins("JOIN users ON posts.user_id = users.id").Where("posts.id = ? AND posts.deleted_at IS NULL", id).First(&post).Error; err != nil {
+	if err := r.Conn.Table("posts").Select("posts.id, users.name as username, posts.user_id, posts.title, posts.body, posts.type, posts.created_at, posts.updated_at").Joins("JOIN users ON posts.user_id = users.id").Where("posts.id = ? AND posts.deleted_at IS NULL", id).First(&post).Error; err != nil {
 		return nil, err
 	}
 
-	return entities.NewPost(post.Id, post.Title, post.Body, post.UserId, post.Username, post.CreatedAt, post.UpdatedAt), nil
+	return entities.NewPost(post.Id, post.Title, post.Body, post.UserId, post.Username, post.Type, post.CreatedAt, post.UpdatedAt), nil
 }
 
 func (r *PostRepository) DeletePost(id int) error {
@@ -90,7 +91,7 @@ func (r *PostRepository) DeletePost(id int) error {
 func convertPostRepositoryModelToEntity(v []Post) []*entities.Post {
 	var posts []*entities.Post
 	for _, post := range v {
-		posts = append(posts, entities.NewPost(post.Id, post.Title, post.Body, post.UserId, post.Username, post.CreatedAt, post.UpdatedAt))
+		posts = append(posts, entities.NewPost(post.Id, post.Title, post.Body, post.UserId, post.Username, post.Type, post.CreatedAt, post.UpdatedAt))
 	}
 	return posts
 }

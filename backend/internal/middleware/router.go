@@ -11,7 +11,8 @@ func SetupRoutes(app *gin.Engine, db *gorm.DB) {
 	postRepository := repositories.NewPostRepository(db)
 	userRepository := repositories.NewUserRepository(db)
 	commentRepository := repositories.NewCommentRepository(db)
-	h := NewHandler(postRepository, userRepository, commentRepository)
+	intentionRepository := repositories.NewIntentionRepository(db)
+	h := NewHandler(postRepository, userRepository, commentRepository, intentionRepository)
 
 	app.POST("/signup", h.PostSignup)
 	app.POST("/signin", h.PostSignin)
@@ -40,4 +41,7 @@ func SetupRoutes(app *gin.Engine, db *gorm.DB) {
 	authGroup.POST("/comments", h.PostComment)
 	authGroup.PUT("/comments/:id", h.PutComment)
 	authGroup.DELETE("/comments/:id", h.DeleteComment)
+
+	app.GET("/intention/:post_id", h.GetIntention)
+	authGroup.POST("/intention/:post_id", h.PostIntention)
 }

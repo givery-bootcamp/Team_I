@@ -7,7 +7,7 @@ import {fetchPosts} from '../../shared/services/apiService';
 type FetchPostsOptions = {
     page?: number;
     limit?: number;
-    type?: 'official' | 'yamada';
+    type?: 'Official' | 'Yamada';
 }
 
 
