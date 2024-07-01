@@ -32,6 +32,9 @@ func GetIntention(ctx *gin.Context, usecase *usecases.GetIntentionUsecase) {
 		handleError(ctx, http.StatusBadRequest, err)
 		return
 	}
+	for _, user := range result {
+		user.Password = ""
+	}
 
 	ctx.JSON(http.StatusOK, result)
 }
